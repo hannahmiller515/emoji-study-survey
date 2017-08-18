@@ -1,10 +1,16 @@
 <!-- app/templates/survey/index.html-->
 
 {% extends "base.html" %}
-{% block title %}UMN Emoji Study{% endblock %}
 {% block body %}
 <div>
-  <h1>Flask Is Awesome</h1>
-  <p class="lead">And I'm glad to be learning so much about it!</p>
+  <p>{{ informed_consent.intro }}</p>
+  <h4>{{ informed_consent.purpose_header }}</h4>
+  <p>{{ informed_consent.purpose }}</p>
+  <h4>{{ informed_consent.contact_header }}</h4>
+  <p>{{ informed_consent.contact }}</p>
+  <h4>{{ informed_consent.voluntary_header }}</h4>
+  <p>{{ informed_consent.voluntary }}</p>
+  <h4>{{ informed_consent.statement_header }}</h4>
+  <p>{{ informed_consent.statement }}</p>
 </div>
 {% endblock %}

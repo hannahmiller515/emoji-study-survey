@@ -26,9 +26,4 @@ def create_app(config_name):
     from .survey import survey as survey_blueprint
     app.register_blueprint(survey_blueprint)
     
-    # temporary route
-    @app.route('/')
-    def hello_world():
-        return 'Hello, World!'
-
     return app
