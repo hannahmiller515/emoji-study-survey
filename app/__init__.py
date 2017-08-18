@@ -23,6 +23,9 @@ def create_app(config_name):
     migrate = Migrate(app, db)
     from app import models
     
+    from .survey import survey as survey_blueprint
+    app.register_blueprint(survey_blueprint)
+    
     # temporary route
     @app.route('/')
     def hello_world():
