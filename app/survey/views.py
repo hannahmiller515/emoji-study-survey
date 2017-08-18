@@ -12,6 +12,14 @@ def landing_page():
     """
     return render_template('survey/index.html', title="UMN Emoji Study")
 
+@survey.route('/foo')
+def landing_page():
+    """
+    Render the informed consent template on the / route
+    TODO capture url id!
+    """
+    return render_template('survey/index.html', title="UMN Emoji Study")
+
 @survey.route('/page1')
 def page_one():
     """
