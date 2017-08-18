@@ -2,36 +2,32 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>UMN Emoji Study</title>
-    
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-  </head>
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-    <!-- Custom styles for this template -->
-    <link href="https://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
-  </head>
-  <body>
-    <div>
-      <div class="header clearfix">
-        <p>UMN Emoji Study</p>
-      </div>
-      <div class="container">
-        {% block body %}
-        {% endblock %}
-        <div class="push"></div>
-      </div>
-      <footer class="footer">
-        <div class="container">
-            <p>UMN Emoji Study</p>
-        </div>
-      </footer>
-    </div> <!-- /container -->
-  </body>
+    <head>
+        <title>UMN Emoji Study</title>
+        
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <!-- Custom styles for this template -->
+        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    </head>
+    <body>
+        <div>
+            <div class="intro-header">
+                <h1>UMN Emoji Study</h1>
+            </div>
+            <div class="container">
+                <div class="push"></div>
+                {% block body %}
+                {% endblock %}
+                <div class="push"></div>
+            </div>
+            <footer class="footer">
+                <p>UMN Emoji Study</p>
+            </footer>
+        </div> <!-- /container -->
+    </body>
 </html>
