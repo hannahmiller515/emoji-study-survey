@@ -1,9 +1,10 @@
 # app/models.py
 
-from app import db
+#from app import db
 
 class Survey:
-    
+    survey_id = None
+
     informed_consent = {}
     informed_consent["intro"] = """Thank you for participating! But first, we ask that you read 
                                 the following information and ask any questions you may have  
@@ -22,7 +23,7 @@ class Survey:
                                 any questions about this study, please feel free to contact the researchers 
                                 at emojistudy@umn.edu. If you have any questions or concerns regarding 
                                 this study and would like to talk to someone other than the researchers, 
-                                you are encouraged to contact the Research Subjects'; Advocate Line, 
+                                you are encouraged to contact the Research Subjects' Advocate Line,
                                 D528 Mayo, 420 Delaware St. Southeast, Minneapolis, MN 55455; (612) 625-1650."""
     informed_consent["voluntary_header"] = "Participation is Voluntary:"
     informed_consent["voluntary"] = """Participation in this study is voluntary. You may exit from the 
@@ -30,21 +31,16 @@ class Survey:
                                 not affect your current or future relations with the University of Minnesota."""
     informed_consent["statement_header"] = "Statement of Consent:"
     informed_consent["statement"] = "After reading the above passage, please select whether you consent to participate:"
-    informed_consent["options"] = [{"label": "I agree to participate",
-                                   "value": True},
-                                   {"label": "I do not agree to participate",
-                                   "value": False}]
-    
-    def __init__(self):
-        self._survey_id = None
-        
-    
-       
+    informed_consent["options"] = [("yes","I agree to participate"),
+                                   ("no","I do not agree to participate")]
+    informed_consent["no_consent"] = "We understand. Thank you for your time!"
 
+
+
+
+"""
 class Participant(db.Model):
-    """
-    Create a Participant table
-    """
+    # Create a Participant table
            
     # Ensures table will be named in plural and not in singular
     # as is the name of the model
@@ -67,3 +63,4 @@ class Participant(db.Model):
     
     def __repr__(self):
         return '<Participant: {}>'.format(self.screen_name)
+"""

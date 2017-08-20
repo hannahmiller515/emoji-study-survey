@@ -1,5 +1,6 @@
 <!-- app/templates/survey/index.html-->
 
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 {% block body %}
 <div>
@@ -12,5 +13,17 @@
     <p>{{ informed_consent.voluntary }}</p>
     <h4>{{ informed_consent.statement_header }}</h4>
     <p>{{ informed_consent.statement }}</p>
+    <div class="container">
+        <form class="form form-horizontal" method="post" role="form">
+            {{ wtf.form_field(form.consent) }}
+            {{ form.hidden_tag() }}
+            <div class="form-group has-danger">
+                <div class="form-control-feedback">{{ wtf.form_errors(form) }}</div>
+            </div>
+            <div class="row justify-content-end">
+                <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

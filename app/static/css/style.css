@@ -19,18 +19,19 @@ footer {
 .alert-info {
     width: 50%;
     margin: auto;
-    color: #687430;
-    background-color: #e6ecca;
-    border-color: #aec251;
+    color: #f8f8f8;
+    background-color: #ffcc33;
+    border-color: #7a0019;
 }
 
 .btn-default {
-    border-color: #aec251;
-    color: #aec251;
+    border-color: #7a0019;
+    color: #7a0019;
 }
 
 .btn-default:hover {
-    background-color: #aec251;
+    background-color: #7a0019;
+    color: #f8f8f8;
 }
 
 .intro-header {
