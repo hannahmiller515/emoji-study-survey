@@ -1,7 +1,7 @@
 # app/survey/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, SubmitField, TextAreaField, ValidationError
+from wtforms import StringField, RadioField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import InputRequired,DataRequired
 
 from ..models import Survey
@@ -84,3 +84,59 @@ class FollowForm(FlaskForm):
                                       validators=[InputRequired("Required")])
     effect_communication_explanation = TextAreaField(Survey.explain)
     submit = SubmitField('Next >>')
+
+class AudienceForm(FlaskForm):
+    audience_description = TextAreaField(Survey.page_nine_audience["audience_description"])
+
+    # following checkboxes
+    friends_in_audience = BooleanField("Friends")
+    family_in_audience = BooleanField("Family")
+    professional_in_audience = BooleanField("Professional Connections")
+    online_only_in_audience = BooleanField("Online-only Connections")
+    strangers_in_audience = BooleanField("Strangers")
+    other_in_audience = BooleanField("Other:")
+    other_in_audience_desc = StringField()
+
+    # device checkboxes
+    use_on_iPhone = BooleanField("iPhone")
+    use_on_iPad = BooleanField("iPad")
+    use_on_MacBook = BooleanField("MacBook")
+    use_on_iMac = BooleanField("iMac")
+    use_on_iOS_Other = BooleanField("iOS Other:")
+    iOS_Other_desc = StringField()
+    use_on_Samsung_Phone = BooleanField("Samsung Phone")
+    use_on_Samsung_Tablet = BooleanField("Samsung Tablet")
+    use_on_Samsung_Other = BooleanField("Samsung Other:")
+    Samsung_Other_desc = StringField()
+    use_on_Google_Phone = BooleanField("Google Phone")
+    use_on_Google_Tablet = BooleanField("Google Tablet")
+    use_on_Google_Other = BooleanField("Google Other:")
+    Google_Other_desc = StringField()
+    use_on_LG_Phone = BooleanField("LG Phone")
+    use_on_LG_Other = BooleanField("LG Other")
+    LG_Other_desc = StringField()
+    use_on_Motorola_Phone = BooleanField("Motorola Phone")
+    use_on_Motorola_Other = BooleanField("Motorola Other:")
+    Motorola_Other_desc = StringField()
+    use_on_HTC_Phone = BooleanField("HTC Phone")
+    use_on_HTC_Other = BooleanField("HTC Other:")
+    HTC_Other_desc = StringField()
+    use_on_Amazon_Kindle = BooleanField("Amazon Kindle")
+    use_on_Blackberry_Phone = BooleanField("Blackberry Phone")
+    use_on_Blackberry_Tablet = BooleanField("Blackberry Tablet")
+    use_on_Blackberry_Other = BooleanField("Blackberry Other:")
+    Blackberry_Other_desc = StringField()
+    use_on_Windows_Phone = BooleanField("Windows Phone")
+    use_on_Windows_Tablet = BooleanField("Windows/Microsoft Tablet")
+    use_on_Windows_Laptop = BooleanField("Windows Laptop")
+    use_on_Windows_Desktop = BooleanField("Windows Desktop")
+    use_on_Windows_Other = BooleanField("Windows Other:")
+    Windows_Other_desc = StringField()
+    use_on_Other = BooleanField("Other:")
+    Other_desc = StringField()
+    submit = SubmitField('Next >>')
+
+class FutureForm(FlaskForm):
+    contact_in_future = RadioField(choices=Survey.page_ten_future["future_options"],
+                                   validators=[InputRequired("Required")])
+    submit = SubmitField('Submit Survey')

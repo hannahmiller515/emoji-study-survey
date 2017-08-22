@@ -7,11 +7,70 @@
     <form class="form form-horizontal" method="post" role="form">
         {{ form.hidden_tag() }}
 
-        <div class="form-group has-danger">
-            {{ wtf.form_field(form.) }}
-            {% if form.consent.errors %}
-                <div class="form-control-feedback">{% for error in form..errors %}* {{ error }}{% endfor %}</div>
-            {% endif %}
+        {{ wtf.form_field(form.audience_description) }}
+
+        <br/><br/><p>{{ form_text.audience }}</p>
+        <div class="form-group">
+            <div class="container">
+                {{ wtf.form_field(form.friends_in_audience) }}
+                {{ wtf.form_field(form.family_in_audience) }}
+                {{ wtf.form_field(form.professional_in_audience) }}
+                {{ wtf.form_field(form.online_only_in_audience) }}
+                {{ wtf.form_field(form.strangers_in_audience) }}
+                {{ wtf.form_field(form.other_in_audience) }}
+                {{ form.other_in_audience_desc(class="form-control short-text-field push-right") }}
+            </div>
+        </div>
+
+        <br/><br/><p>{{ form_text.all_devices }}</p>
+        <div class="form-group">
+            <div class="container">
+                {{ wtf.form_field(form.use_on_iPhone) }}
+                {{ wtf.form_field(form.use_on_iPad) }}
+                {{ wtf.form_field(form.use_on_MacBook) }}
+                {{ wtf.form_field(form.use_on_iMac) }}
+                {{ wtf.form_field(form.use_on_iOS_Other) }}
+                <div class="pad-bottom">{{ form.iOS_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_Samsung_Phone) }}
+                {{ wtf.form_field(form.use_on_Samsung_Tablet) }}
+                {{ wtf.form_field(form.use_on_Samsung_Other) }}
+                <div class="pad-bottom">{{ form.Samsung_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_Google_Phone) }}
+                {{ wtf.form_field(form.use_on_Google_Tablet) }}
+                {{ wtf.form_field(form.use_on_Google_Other) }}
+                <div class="pad-bottom">{{ form.Google_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_LG_Phone) }}
+                {{ wtf.form_field(form.use_on_LG_Other) }}
+                <div class="pad-bottom">{{ form.LG_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_Motorola_Phone) }}
+                {{ wtf.form_field(form.use_on_Motorola_Other) }}
+                <div class="pad-bottom">{{ form.Motorola_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_HTC_Phone) }}
+                {{ wtf.form_field(form.use_on_HTC_Other) }}
+                <div class="pad-bottom">{{ form.HTC_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_Amazon_Kindle) }}
+
+                {{ wtf.form_field(form.use_on_Blackberry_Phone) }}
+                {{ wtf.form_field(form.use_on_Blackberry_Tablet) }}
+                {{ wtf.form_field(form.use_on_Blackberry_Other) }}
+                <div class="pad-bottom">{{ form.Blackberry_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_Windows_Phone) }}
+                {{ wtf.form_field(form.use_on_Windows_Tablet) }}
+                {{ wtf.form_field(form.use_on_Windows_Laptop) }}
+                {{ wtf.form_field(form.use_on_Windows_Desktop) }}
+                {{ wtf.form_field(form.use_on_Windows_Other) }}
+                <div class="pad-bottom">{{ form.Windows_Other_desc(class="form-control short-text-field push-right") }}</div>
+
+                {{ wtf.form_field(form.use_on_Other) }}
+                <div class="pad-bottom">{{ form.Other_desc(class="form-control short-text-field push-right") }}</div>
+            </div>
         </div>
 
         <div class="row justify-content-end">

@@ -32,7 +32,51 @@ class Survey:
     effect_Twitter_explanation = None
     effect_communication = None
     effect_communication_explanation = None
-
+    audience_description = None
+    friends_in_audience = None
+    family_in_audience = None
+    professional_in_audience = None
+    online_only_in_audience = None
+    strangers_in_audience = None
+    other_in_audience = None
+    other_in_audience_desc = None
+    use_on_iPhone = None
+    use_on_iPad = None
+    use_on_MacBook = None
+    use_on_iMac = None
+    use_on_iOS_Other = None
+    iOS_Other_desc = None
+    use_on_Samsung_Phone = None
+    use_on_Samsung_Tablet = None
+    use_on_Samsung_Other = None
+    Samsung_Other_desc = None
+    use_on_Google_Phone = None
+    use_on_Google_Tablet = None
+    use_on_Google_Other = None
+    Google_Other_desc = None
+    use_on_LG_Phone = None
+    use_on_LG_Other = None
+    LG_Other_desc = None
+    use_on_Motorola_Phone = None
+    use_on_Motorola_Other = None
+    Motorola_Other_desc = None
+    use_on_HTC_Phone = None
+    use_on_HTC_Other = None
+    HTC_Other_desc = None
+    use_on_Amazon_Kindle = None
+    use_on_Blackberry_Phone = None
+    use_on_Blackberry_Tablet = None
+    use_on_Blackberry_Other = None
+    Blackberry_Other_desc = None
+    use_on_Windows_Phone = None
+    use_on_Windows_Tablet = None
+    use_on_Windows_Laptop = None
+    use_on_Windows_Desktop = None
+    use_on_Windows_Other = None
+    Windows_Other_desc = None
+    use_on_Other = None
+    Other_desc = None
+    contact_in_future = None
 
 
     # COMMON
@@ -209,7 +253,22 @@ class Survey:
                                                 this, do you think this may have any affect on your direct communication
                                                 outside of Twitter (e.g., when you directly text a friend)?"""
 
+    # PAGE NINE AUDIENCE
+    page_nine_audience = {}
+    page_nine_audience["audience_description"] = """When you tweet, who do you feel like you're typically targeting?
+                                                How would you describe your Twitter following (i.e., those that follow
+                                                you on Twitter)?"""
+    page_nine_audience["audience"] = "Does your Twitter following contain… (please check all that apply)"
+    page_nine_audience["all_devices"] = "Please indicate all devices that you use Twitter on:"
 
+    # PAGE TEN FUTURE
+    page_ten_future = {}
+    page_ten_future["future"] = """We may continue this research in the future: Are you open
+                                   us contacting you again for future participation?"""
+    page_ten_future["future_options"] = [("yes","Yes, you may contact me again in the future."),
+                                         ("no","No, please do not contact me again.")]
+
+    end_text = "Your survey has been submitted. Thank you so much for your time and participation. Happy tweeting!"
 
 """
 class Participant(db.Model):
