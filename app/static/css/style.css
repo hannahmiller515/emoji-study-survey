@@ -23,6 +23,8 @@ td {
 
 img {
     position: relative;
+    max-width: 100%;
+    max-height: 60px;
 }
 
 .pad-bottom {
@@ -42,7 +44,8 @@ img {
 .tweet-box {
     border-style: solid;
     border-width: thin;
-    padding: 10px;
+    padding: 15px;
+    background-color: #ffffff;
 }
 
 .short-text-field {
@@ -68,20 +71,19 @@ img {
 }
 
 .btn-default:hover {
-    background-color: #ffb409;
+    background-color: #ffbe00;
 }
 
 .intro-header {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-left: 10px;
+    padding: 20px 20px 20px 10px;
     background-color: #7a0019;
-
     height: 100%;
 }
 
 .footer {
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 10px;
     background-color: #7a0019;
     background-size: cover;
 }

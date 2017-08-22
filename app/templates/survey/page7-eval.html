@@ -3,28 +3,29 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 {% block body %}
-<div>
-    <div class="row justify-content-around">
-        <div class="col justify-content-center">
-            <p>{{ form_text.show_tweet }}</p>
-            <div class="tweet-box">
-                Show what happens when the tweet is too long to fit in the div
+<form class="form form-horizontal survey-background" method="post" role="form">
+    <div class="container">
+        <div class="row justify-content-around">
+            <div class="col justify-content-center">
+                <p><b>{{ form_text.show_tweet }}</b></p>
+                <div class="tweet-box">
+                    Show what happens when the tweet is too long to fit in the div
+                </div>
+            </div>
+            <div class="col justify-content-center">
+                <p><b>{{ form_text.followers_see }}</b></p>
+                <div class="tweet-box">
+                    <p>Show tweet here</p>
+                    <p>Show tweet here</p>
+                    <p>Show tweet here</p>
+                    <p>Show tweet here</p>
+                    <p>Show tweet here</p>
+                </div>
             </div>
         </div>
-        <div class="col justify-content-center">
-            <p>{{ form_text.followers_see }}</p>
-            <div class="tweet-box">
-                <p>Show tweet here</p>
-                <p>Show tweet here</p>
-                <p>Show tweet here</p>
-                <p>Show tweet here</p>
-                <p>Show tweet here</p>
-            </div>
-        </div>
-    </div>
-    <br/>
-    <br/>
-    <form class="form form-horizontal" method="post" role="form">
+        <br/>
+        <br/>
+
         {{ form.hidden_tag() }}
 
         <p>{{ form_text.same_message }}</p>
@@ -74,11 +75,12 @@
                 </div>
             </div>
         </div>
-
-        <br/>
+    </div>
+    <div class="push"></div>
+    <div class="footer">
         <div class="container row justify-content-end">
-            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+            {{ wtf.form_field(form.submit) }}
         </div>
-    </form>
-</div>
+    </div>
+</form>
 {% endblock %}

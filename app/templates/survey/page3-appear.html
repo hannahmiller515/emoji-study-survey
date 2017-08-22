@@ -3,12 +3,13 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 {% block body %}
-<div>
-    <p>{{ form_text.show_tweet }}</p>
-    <div class="tweet-box">Show tweet with emoji here</div>
-    <br/>
-    <br/>
-    <form class="form form-horizontal" method="post" role="form">
+<form class="form form-horizontal survey-background" method="post" role="form">
+    <div class="container">
+        <p>{{ form_text.show_tweet }}</p>
+        <div class="tweet-box">Show tweet with emoji here</div>
+        <br/>
+        <br/>
+
         {{ form.hidden_tag() }}
 
         <p>{{ form_text.appear }}</p>
@@ -25,10 +26,12 @@
                 {{ wtf.form_field(form.appear_explanation) }}
             </div>
         </div>
-
+    </div>
+    <div class="push"></div>
+    <div class="footer">
         <div class="container row justify-content-end">
-            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+            {{ wtf.form_field(form.submit) }}
         </div>
-    </form>
-</div>
+    </div>
+</form>
 {% endblock %}

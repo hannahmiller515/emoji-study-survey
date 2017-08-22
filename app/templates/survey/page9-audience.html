@@ -3,13 +3,13 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 {% block body %}
-<div>
-    <form class="form form-horizontal" method="post" role="form">
+<form class="form form-horizontal survey-background" method="post" role="form">
+    <div class="container">
         {{ form.hidden_tag() }}
 
         {{ wtf.form_field(form.audience_description) }}
 
-        <br/><br/><p>{{ form_text.audience }}</p>
+        <br/><p>{{ form_text.audience }}</p>
         <div class="form-group">
             <div class="container">
                 {{ wtf.form_field(form.friends_in_audience) }}
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <br/><br/><p>{{ form_text.all_devices }}</p>
+        <br/><p>{{ form_text.all_devices }}</p>
         <div class="form-group">
             <div class="container">
                 {{ wtf.form_field(form.use_on_iPhone) }}
@@ -72,10 +72,12 @@
                 <div class="pad-bottom">{{ form.Other_desc(class="form-control short-text-field push-right") }}</div>
             </div>
         </div>
-
-        <div class="row justify-content-end">
-            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+    </div>
+    <div class="push"></div>
+    <div class="footer">
+        <div class="container row justify-content-end">
+            {{ wtf.form_field(form.submit) }}
         </div>
-    </form>
-</div>
+    </div>
+</form>
 {% endblock %}

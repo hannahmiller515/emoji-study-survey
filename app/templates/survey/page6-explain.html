@@ -3,17 +3,18 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 {% block body %}
-<div>
-    <p>{{ form_text.here }}</p>
+<form class="form form-horizontal survey-background" method="post" role="form">
+    <div class="container">
+        <p>{{ form_text.here }}</p>
 
-    <p>{{ form_text.explain1 }}</p>
+        <p>{{ form_text.explain1 }}</p>
 
-    Explanation image here
-    <br/>
-    <br/>
-    <p>{{ form_text.explain2 }}</p>
-    <br/>
-    <form class="form form-horizontal" method="post" role="form">
+        Explanation image here
+        <br/>
+        <br/>
+        <p>{{ form_text.explain2 }}</p>
+        <br/>
+
         {{ form.hidden_tag() }}
 
         {{ wtf.form_field(form.describe_reaction) }}
@@ -26,10 +27,12 @@
                 <div class="form-control-feedback">{% for error in form.reaction.errors %}* {{ error }}{% endfor %}</div>
             {% endif %}
         </div>
-        <br/>
+    </div>
+    <div class="push"></div>
+    <div class="footer">
         <div class="container row justify-content-end">
-            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+            {{ wtf.form_field(form.submit) }}
         </div>
-    </form>
-</div>
+    </div>
+</form>
 {% endblock %}
