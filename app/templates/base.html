@@ -11,23 +11,20 @@
         
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
         <!-- Custom styles for this template -->
         <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     </head>
     <body>
-        <div>
+        <div class="container">
+
             <div class="intro-header">
-                <h1>UMN Emoji Study</h1>
+                <img src="{{ url_for('static', filename='img/UMN-D2D.png') }}">
             </div>
-            <div class="container">
-                <div class="push"></div>
-                {% block body %}
-                {% endblock %}
-                <div class="push"></div>
-            </div>
-            <footer class="footer">
-                <p>UMN Emoji Study</p>
-            </footer>
+
+            <div class="push"></div>
+            {% block body %}
+            {% endblock %}
         </div> <!-- /container -->
     </body>
 </html>

@@ -7,10 +7,6 @@ from . import survey
 from .forms import ConsentForm,AgeForm,DeviceForm,AppearForm,EmojiRoleForm,ExposeForm,ExplainForm,EvalForm,FollowForm,AudienceForm,FutureForm
 from ..models import Survey
 
-@survey.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(survey.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
 @survey.route('/')
 def route_to_website():
     return redirect("http://z.umn.edu/emojistudy")

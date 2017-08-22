@@ -9,13 +9,13 @@ from ..models import Survey
 class ConsentForm(FlaskForm):
     consent = RadioField(choices=Survey.informed_consent["options"],
                          validators=[InputRequired("Please provide your statement of consent.")])
-    submit = SubmitField('Submit')
+    submit = SubmitField('>>')
 
 class AgeForm(FlaskForm):
     handle = StringField("Twitter Handle", validators=[InputRequired("Please enter your twitter handle.")])
     age = RadioField(choices=Survey.page_one_age["age_options"],
                      validators=[InputRequired("Please select your age.")])
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class DeviceForm(FlaskForm):
     emoji = RadioField(choices=Survey.page_two_device["emoji_options"],
@@ -31,13 +31,13 @@ class DeviceForm(FlaskForm):
     Blackberry_Other = StringField()
     Windows_Other = StringField()
     Other = StringField()
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class AppearForm(FlaskForm):
     appear = RadioField(choices=Survey.yes_no_options,
                         validators=[InputRequired("Required")])
     appear_explanation = TextAreaField(Survey.explain)
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class EmojiRoleForm(FlaskForm):
     needs_emoji = RadioField(choices=Survey.page_four_emojirole["likert_options"],
@@ -46,17 +46,17 @@ class EmojiRoleForm(FlaskForm):
                               validators=[InputRequired("Required")])
     could_substitute = RadioField(choices=Survey.page_four_emojirole["likert_options"],
                                   validators=[InputRequired("Required")])
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class ExposeForm(FlaskForm):
     aware = RadioField(choices=Survey.page_five_expose["expose_options"],
                        validators=[InputRequired("Required")])
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class ExplainForm(FlaskForm):
     describe_reaction = TextAreaField(Survey.page_six_explain["describe_reaction"])
     reaction = StringField(Survey.page_six_explain["reaction"],validators=[InputRequired("Required")])
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class EvalForm(FlaskForm):
     same_message = RadioField(choices=Survey.page_seven_eval["same_message_options"],
@@ -71,7 +71,7 @@ class EvalForm(FlaskForm):
     edit_tweet = RadioField(choices=Survey.page_seven_eval["edit_tweet_options"],
                             validators=[InputRequired("Required")])
     edit_tweet_other = StringField()
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class FollowForm(FlaskForm):
     emoji_frequency = RadioField(choices=Survey.page_eight_follow["emoji_frequency_options"],
@@ -83,7 +83,7 @@ class FollowForm(FlaskForm):
     effect_communication = RadioField(choices=Survey.yes_no_options,
                                       validators=[InputRequired("Required")])
     effect_communication_explanation = TextAreaField(Survey.explain)
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class AudienceForm(FlaskForm):
     audience_description = TextAreaField(Survey.page_nine_audience["audience_description"])
@@ -134,9 +134,9 @@ class AudienceForm(FlaskForm):
     Windows_Other_desc = StringField()
     use_on_Other = BooleanField("Other:")
     Other_desc = StringField()
-    submit = SubmitField('Next >>')
+    submit = SubmitField('>>')
 
 class FutureForm(FlaskForm):
     contact_in_future = RadioField(choices=Survey.page_ten_future["future_options"],
                                    validators=[InputRequired("Required")])
-    submit = SubmitField('Submit Survey')
+    submit = SubmitField('>>')
