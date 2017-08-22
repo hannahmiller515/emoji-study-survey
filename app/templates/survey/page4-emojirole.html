@@ -1,0 +1,86 @@
+<!-- app/templates/survey/page_four_emojirole.html-->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <p>{{ form_text.show_tweet }}</p>
+    <div class="tweet-box">Show tweet with emoji here</div>
+    <br/>
+    <br/>
+    <p>{{ form_text.emoji_role }}</p>
+    <div class="container">
+        <form class="form form-horizontal" method="post" role="form">
+            {{ form.hidden_tag() }}
+
+            <p>{{ form_text.needs_emoji }}</p>
+            <div class="form-group has-danger">
+                <div class="container">
+                    <div class="row justify-content-around">
+                        {% for radiofield in form.needs_emoji %}
+                            <div class="col">
+                                <div class="row small-text justify-content-center">
+                                    {{ radiofield.label }}
+                                </div>
+                                <div class="row justify-content-center">
+                                    {{ radiofield }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.needs_emoji.errors %}
+                        <div class="form-control-feedback">{% for error in form.needs_emoji.errors %}* {{ error }}{% endfor %}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <br/><p>{{ form_text.could_remove }}</p>
+            <div class="form-group has-danger">
+                <div class="container">
+                    <div class="row justify-content-around">
+                        {% for radiofield in form.could_remove %}
+                            <div class="col">
+                                <div class="row small-text justify-content-center">
+                                    {{ radiofield.label }}
+                                </div>
+                                <div class="row justify-content-center">
+                                    {{ radiofield }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.could_remove.errors %}
+                        <div class="form-control-feedback">{% for error in form.could_remove.errors %}* {{ error }}{% endfor %}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <br/><p>{{ form_text.could_substitute }}</p>
+            <div class="form-group has-danger">
+                <div class="container">
+                    <div class="row justify-content-around">
+                        {% for radiofield in form.could_substitute %}
+                            <div class="col">
+                                <div class="row small-text justify-content-center">
+                                    {{ radiofield.label }}
+                                </div>
+                                <div class="row justify-content-center">
+                                    {{ radiofield }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.could_substitute.errors %}
+                        <div class="form-control-feedback">{% for error in form.could_substitute.errors %}* {{ error }}{% endfor %}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <br/>
+            <div class="container row justify-content-end">
+                <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

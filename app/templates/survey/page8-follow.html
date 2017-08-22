@@ -1,0 +1,63 @@
+<!-- app/templates/survey/page_eight_follow.html-->
+<!-- app/templates/survey/page_seven_eval.html-->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <form class="form form-horizontal" method="post" role="form">
+        {{ form.hidden_tag() }}
+
+        <p>{{ form_text.emoji_frequency }}</p>
+        <div class="form-group has-danger">
+            <div class="container">
+                <div class="row justify-content-around">
+                    {% for radiofield in form.emoji_frequency %}
+                        <div class="col">
+                            <div class="row small-text justify-content-center">
+                                {{ radiofield.label }}
+                            </div>
+                            <div class="row justify-content-center pad-bottom">
+                                {{ radiofield }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if form.emoji_frequency.errors %}
+                    <div class="form-control-feedback push-right">{% for error in form.emoji_frequency.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <br/>{{ wtf.form_field(form.impression) }}
+
+        <br/><p>{{ form_text.effect_Twitter }}</p>
+        <div class="form-group has-danger">
+            <div class="container">
+                {{ wtf.form_field(form.effect_Twitter) }}
+                {% if form.effect_Twitter.errors %}
+                    <div class="form-control-feedback">{% for error in form.effect_Twitter.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group container">{{ wtf.form_field(form.effect_Twitter_explanation) }}</div>
+
+        <br/><p>{{ form_text.effect_communication }}</p>
+        <div class="form-group has-danger">
+            <div class="container">
+                {{ wtf.form_field(form.effect_communication) }}
+                {% if form.effect_communication.errors %}
+                    <div class="form-control-feedback">{% for error in form.effect_communication.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group container">{{ wtf.form_field(form.effect_communication_explanation) }}</div>
+
+        <br/>
+        <div class="container row justify-content-end">
+            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+        </div>
+    </form>
+</div>
+{% endblock %}

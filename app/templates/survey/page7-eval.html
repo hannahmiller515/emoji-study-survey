@@ -1,0 +1,84 @@
+<!-- app/templates/survey/page_seven_eval.html-->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <div class="row justify-content-around">
+        <div class="col justify-content-center">
+            <p>{{ form_text.show_tweet }}</p>
+            <div class="tweet-box">
+                Show what happens when the tweet is too long to fit in the div
+            </div>
+        </div>
+        <div class="col justify-content-center">
+            <p>{{ form_text.followers_see }}</p>
+            <div class="tweet-box">
+                <p>Show tweet here</p>
+                <p>Show tweet here</p>
+                <p>Show tweet here</p>
+                <p>Show tweet here</p>
+                <p>Show tweet here</p>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <form class="form form-horizontal" method="post" role="form">
+        {{ form.hidden_tag() }}
+
+        <p>{{ form_text.same_message }}</p>
+        <div class="form-group has-danger">
+            <div class="container">
+                {{ wtf.form_field(form.same_message) }}
+                {% if form.same_message.errors %}
+                    <div class="form-control-feedback">{% for error in form.same_message.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group container">{{ wtf.form_field(form.same_message_explanation) }}</div>
+
+        <br/><br/><p>{{ form_text.same_interpretation }}</p>
+        <div class="form-group has-danger">
+            <div class="container">
+                {{ wtf.form_field(form.same_interpretation) }}
+                {% if form.same_interpretation.errors %}
+                    <div class="form-control-feedback">{% for error in form.same_interpretation.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group container">{{ wtf.form_field(form.same_interpretation_explanation) }}</div>
+
+        <br/><br/><p>{{ form_text.send_tweet }}</p>
+        <div class="form-group has-danger">
+            <div class="container">
+                {{ wtf.form_field(form.send_tweet) }}
+                {% if form.send_tweet.errors %}
+                    <div class="form-control-feedback">{% for error in form.send_tweet.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group container">{{ wtf.form_field(form.send_tweet_explanation) }}</div>
+
+        <br/><br/><p>{{ form_text.edit_tweet }}</p>
+        <div class="form-group">
+            <div class="container">
+                {{ wtf.form_field(form.edit_tweet) }}
+                <div class="pad-bottom">{{ form.edit_tweet_other(class="form-control short-text-field push-right") }}</div>
+            </div>
+            <div class="form-group has-danger">
+                <div class="container">
+                    {% if form.edit_tweet.errors %}
+                        <div class="form-control-feedback">{% for error in form.edit_tweet.errors %}* {{ error }}{% endfor %}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <br/>
+        <div class="container row justify-content-end">
+            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+        </div>
+    </form>
+</div>
+{% endblock %}

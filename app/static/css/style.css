@@ -10,6 +10,40 @@ body, h1, h2, h3 {
     font-weight: 500;
 }
 
+td {
+    height: auto;
+    padding-right: 5px;
+    vertical-align: middle;
+}
+
+.pad-bottom {
+    padding-bottom: 15px;
+}
+
+.manual-radio {
+    height: 100%;
+    margin-top: -5px;
+    vertical-align: middle;
+}
+
+.small-text {
+    font-size: 90%;
+}
+
+.tweet-box {
+    border-style: solid;
+    border-width: thin;
+    padding: 10px;
+}
+
+.short-text-field {
+    max-width: 200px;
+}
+
+.push-right {
+    margin-left: 20px;
+}
+
 footer {
     padding: 50px 0;
     background-color: #7a0019;

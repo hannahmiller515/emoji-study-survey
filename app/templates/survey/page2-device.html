@@ -1,0 +1,70 @@
+<!-- app/templates/survey/page_.html-->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <form class="form form-horizontal" method="post" role="form">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group has-danger">
+            <p>{{ form_text.emoji }}</p>
+            <div class="container">
+                {{ wtf.form_field(form.emoji) }}
+                {% if form.emoji.errors %}
+                    <div class="form-control-feedback">{% for error in form.emoji.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <p>{{ form_text.device }}</p>
+            <div class="container">
+                <table>
+                    {% for radiofield in form.device %}
+                        <tr>
+                            <td>{{ radiofield(class="manual-radio") }}</td>
+                            <td>{{ radiofield.label }}</td>
+                            {% if "Other" in radiofield.label.text %}
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    {% if "iOS" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.iOS_Other(class="form-control") }}</td>
+                                    {% elif "Samsung" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.Samsung_Other(class="form-control") }}</td>
+                                    {% elif "Google" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.Google_Other(class="form-control") }}</td>
+                                    {% elif "LG" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.LG_Other(class="form-control") }}</td>
+                                    {% elif "Motorola" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.Motorola_Other(class="form-control") }}</td>
+                                    {% elif "HTC" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.HTC_Other(class="form-control") }}</td>
+                                    {% elif "Blackberry" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.Blackberry_Other(class="form-control") }}</td>
+                                    {% elif "Windows" in radiofield.label.text %}
+                                        <td class="pad-bottom">{{ form.Windows_Other(class="form-control") }}</td>
+                                    {% else %}
+                                        <td class="pad-bottom">{{ form.Other(class="form-control") }}</td>
+                                    {% endif %}
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="form-group has-danger">
+            <div class="container">
+                {% if form.device.errors %}
+                    <div class="form-control-feedback">{% for error in form.device.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="container row justify-content-end">
+            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+        </div>
+    </form>
+</div>
+{% endblock %}

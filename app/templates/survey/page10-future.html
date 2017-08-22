@@ -1,0 +1,22 @@
+<!-- app/templates/survey/page_ten_future.html-->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <form class="form form-horizontal" method="post" role="form">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group has-danger">
+            {{ wtf.form_field(form.) }}
+            {% if form.consent.errors %}
+                <div class="form-control-feedback">{% for error in form..errors %}* {{ error }}{% endfor %}</div>
+            {% endif %}
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-1">{{ wtf.form_field(form.submit) }}</div>
+        </div>
+    </form>
+</div>
+{% endblock %}
