@@ -6,6 +6,7 @@ import os
 from . import survey
 from .forms import ConsentForm,AgeForm,DeviceForm,AppearForm,EmojiRoleForm,ExposeForm,ExplainForm,EvalForm,FollowForm,AudienceForm,FutureForm
 from ..models import Survey
+from .. import mysql
 
 @survey.route('/')
 def route_to_website():
@@ -29,6 +30,7 @@ def informed_consent(survey_id=None):
     # Get the survey id out of the URL
     if survey_id != None:
         Survey.survey_id = survey_id
+        mysql.connect()
     else:
         return redirect("http://z.umn.edu/emojistudy")
     return render_template('survey/informed_consent.html', form=form, informed_consent=Survey.informed_consent)
