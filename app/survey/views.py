@@ -47,6 +47,7 @@ def page_one_age():
             return redirect(url_for("survey.under_18"))
 
         Survey.handle = form.handle.data
+        # TODO verify handle
         Survey.age = int(form.age.data)
 
         return redirect(url_for('survey.page_two_device'))
@@ -64,7 +65,6 @@ def page_two_device():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        emoji = form.emoji.data
         device = form.device.data
         device_other = None
         if device == "iOS_Other":
@@ -86,7 +86,7 @@ def page_two_device():
         elif device == "Other":
             device_other = form.Other.data
 
-        Survey.emoji_device_indicator = emoji
+        Survey.emoji_device_indicator = form.emoji.data
         Survey.device = device
         Survey.device_other = device_other
 
@@ -115,9 +115,9 @@ def page_four_emojirole():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.needs_emoji = form.needs_emoji.data
-        Survey.could_remove = form.could_remove.data
-        Survey.could_substitute = form.could_substitute.data
+        Survey.needs_emoji = int(form.needs_emoji.data)
+        Survey.could_remove = int(form.could_remove.data)
+        Survey.could_substitute = int(form.could_substitute.data)
         return redirect(url_for('survey.page_five_expose'))
 
     #GET
@@ -169,7 +169,7 @@ def page_seven_eval():
         Survey.send_tweet = form.send_tweet.data
         if not form.send_tweet_explanation == '':
             Survey.send_tweet_explanation = form.send_tweet_explanation.data
-        Survey.edit_tweet = form.edit_tweet.data
+        Survey.edit_tweet = int(form.edit_tweet.data)
         if not form.edit_tweet_other == '':
             Survey.edit_tweet_other = form.edit_tweet_other.data
     return render_template('survey/page7-eval.html', form=form, form_text=Survey.page_seven_eval)
@@ -180,7 +180,7 @@ def page_eight_follow():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.emoji_frequency = form.emoji_frequency.data
+        Survey.emoji_frequency = int(form.emoji_frequency.data)
         Survey.effect_Twitter = form.effect_Twitter.data
         Survey.effect_communication = form.effect_communication.data
         if not form.impression.data == '':

@@ -6,18 +6,32 @@
 class Survey:
     survey_id = None
     handle = None
+
+    # age
     age = None
+
+    # device
     emoji_device_indicator = None
     device = None
     device_other = None
+
+    # appearance
     appear = None
     appear_explanation = None
+
+    # emoji role
     needs_emoji = None
     could_remove = None
     could_substitute = None
+
+    # awareness
     aware = None
+
+    # reaction
     describe_reaction = None
     reaction = None
+
+    # evaluation
     same_message = None
     same_message_explanation = None
     same_interpretation = None
@@ -26,12 +40,16 @@ class Survey:
     send_tweet_explanation = None
     edit_tweet = None
     edit_tweet_other = None
+
+    # follow questions
     emoji_frequency = None
     impression = None
     effect_Twitter = None
     effect_Twitter_explanation = None
     effect_communication = None
     effect_communication_explanation = None
+
+    # audience
     audience_description = None
     friends_in_audience = None
     family_in_audience = None
@@ -40,6 +58,8 @@ class Survey:
     strangers_in_audience = None
     other_in_audience = None
     other_in_audience_desc = None
+
+    # all devices
     use_on_iPhone = None
     use_on_iPad = None
     use_on_MacBook = None
@@ -76,6 +96,8 @@ class Survey:
     Windows_Other_desc = None
     use_on_Other = None
     Other_desc = None
+
+    # future contact
     contact_in_future = None
 
 
@@ -181,11 +203,11 @@ class Survey:
     page_four_emojirole["needs_emoji"] = "This tweet needs this emoji to convey what I meant."
     page_four_emojirole["could_remove"] = "The emoji could be removed from this tweet and it would not make a difference."
     page_four_emojirole["could_substitute"] = "A different emoji could be substituted for this emoji in this tweet and not change my meaning."
-    page_four_emojirole["likert_options"] = [("Strongly_Disagree","Strongly Disagree"),
-                                          ("Disagree","Disagree"),
-                                          ("Not_Sure","Not Sure"),
-                                          ("Agree","Agree"),
-                                          ("Strongly_Agree","Strongly Agree")]
+    page_four_emojirole["likert_options"] = [("-2","Strongly Disagree"),
+                                          ("-1","Disagree"),
+                                          ("0","Not Sure"),
+                                          ("1","Agree"),
+                                          ("2","Strongly Agree")]
 
     # PAGE FIVE EXPOSE
     page_five_expose = {}
@@ -241,10 +263,10 @@ class Survey:
     # PAGE EIGHT FOLLOW
     page_eight_follow = {}
     page_eight_follow["emoji_frequency"] = "How often do you include emoji in your tweets?"
-    page_eight_follow["emoji_frequency_options"] = [("Never","Never"),
-                                              ("Once in a while","Once in a while"),
-                                              ("Pretty often","Pretty often"),
-                                              ("Almost every tweet","Almost every tweet")]
+    page_eight_follow["emoji_frequency_options"] = [("0","Never"),
+                                                    ("1","Once in a while"),
+                                                    ("2","Pretty often"),
+                                                    ("3","Almost every tweet")]
     page_eight_follow["impression"] = """Now that you are aware that device platforms translate emoji renderings when you
                                         communicate across platforms, please describe your general impression of this:"""
     page_eight_follow["effect_Twitter"] = "In general, do you think this may have any effect on your Twitter communication?"
