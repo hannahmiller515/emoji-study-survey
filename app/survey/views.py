@@ -5,8 +5,8 @@ import os
 
 from . import survey
 from .forms import ConsentForm,AgeForm,DeviceForm,AppearForm,EmojiRoleForm,ExposeForm,ExplainForm,EvalForm,FollowForm,AudienceForm,FutureForm
-from ..models import Survey
-from .. import mysql
+from ..models import Survey,Queries
+#from .. import engine
 
 @survey.route('/')
 def route_to_website():
@@ -29,8 +29,8 @@ def informed_consent(survey_id=None):
     # GET
     # Get the survey id out of the URL
     if survey_id != None:
-        Survey.survey_id = survey_id
-        mysql.connect()
+        Survey.survey_id = int(survey_id)
+
     else:
         return redirect("http://z.umn.edu/emojistudy")
     return render_template('survey/informed_consent.html', form=form, informed_consent=Survey.informed_consent)
@@ -45,12 +45,15 @@ def page_one_age():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        if form.age.data == "0":
-            return redirect(url_for("survey.under_18"))
-
+        Survey.age = int(form.age.data)
         Survey.handle = form.handle.data
         # TODO verify handle
-        Survey.age = int(form.age.data)
+
+        #conn = engine.connect()
+        #conn.execute(Queries.insert_age_response, (Survey.age, Survey.survey_id))
+
+        if form.age.data == "0":
+            return redirect(url_for("survey.under_18"))
 
         return redirect(url_for('survey.page_two_device'))
 

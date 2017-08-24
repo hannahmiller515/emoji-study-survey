@@ -1,8 +1,6 @@
 # app/models.py
 # -*- coding: utf-8 -*-
 
-#from app import db
-
 class Survey:
     survey_id = None
     handle = None
@@ -285,36 +283,113 @@ class Survey:
 
     # PAGE TEN FUTURE
     page_ten_future = {}
-    page_ten_future["future"] = """We may continue this research in the future: Are you open
+    page_ten_future["future"] = """We may continue this research and we would like to know: Are you open to
                                    us contacting you again for future participation?"""
     page_ten_future["future_options"] = [("yes","Yes, you may contact me again in the future."),
                                          ("no","No, please do not contact me again.")]
 
     end_text = "Your survey has been submitted. Thank you so much for your time and participation. Happy tweeting!"
 
-"""
-class Participant(db.Model):
-    # Create a Participant table
-           
-    # Ensures table will be named in plural and not in singular
-    # as is the name of the model
-    __tablename__ = 'participants'
+class Queries:
+    insert_age_response = '''INSERT INTO age_responses(age,survey_id) VALUES(%s,%s);'''
 
-    id = db.Column(db.Integer, primary_key=True)
-    twitter_id = db.Column(db.String(60), index=True, unique=True)
-    screen_name = db.Column(db.String(20), index=True, unique=True)
-    display_name = db.Column(db.String(60), index=True, unique=True)
-    #created_at = db.Column(db.)
-    friends_count = db.Column(db.Integer)
-    followers_count = db.Column(db.Integer)
-    statuses_count = db.Column(db.Integer)
-    favourites_count = db.Column(db.Integer)
-    is_participant = db.Column(db.Boolean, default=False)
-    
-    #department_id = db.Column(db.Integer, db.ForeignKey('departments.id'))
-    #role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-    #is_admin = db.Column(db.Boolean, default=False)
-    
-    def __repr__(self):
-        return '<Participant: {}>'.format(self.screen_name)
-"""
+    insert_device_response = '''INSERT INTO device_responses(
+                                    device,
+                                    device_other,
+                                    survey_id) VALUES(%s,%s,%s);'''
+
+    insert_appearance_response = '''INSERT INTO appearance_responses(
+                                        appears_same,
+                                        explanation,
+                                        survey_id) VALUES(%s,%s,%s);'''
+
+    insert_emoji_role_response = '''INSERT INTO emoji_role_responses(
+                                        needs_emoji,
+                                        could_remove,
+                                        could_substitute,
+                                        survey_id) VALUES(%s,%s,%s,%s);'''
+
+    insert_into_awareness_response = '''INSERT INTO awareness_responses(
+                                            is_aware,
+                                            survey_id) VALUES(%s,%s);'''
+
+    insert_into_reaction_response = '''INSERT INTO reaction_responses(
+                                            reaction_explanation,
+                                            reaction_short,
+                                            survey_id) VALUES(%s,%s,%s);'''
+
+    insert_into_evaluation_response = '''INSERT INTO evaluation_responses(
+                                            same_message,
+                                            same_message_explanation,
+                                            same_interpretation,
+                                            same_interpretation_explanation,
+                                            send_tweet,
+                                            send_tweet_explanation,
+                                            edit_tweet,
+                                            edit_tweet_other,
+                                            survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
+
+    insert_into_follow_response = '''INSERT INTO follow_responses(
+                                        emoji_frequency,
+                                        impression,
+                                        effect_Twitter,
+                                        effect_Twitter_explanation,
+                                        effect_communication,
+                                        effect_communication_explanation,
+                                        survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s);'''
+
+    insert_into_audience_response = '''INSERT INTO audience_responses(
+                                        audience_description,
+                                        friends_in_audience,
+                                        family_in_audience,
+                                        professional_in_audience,
+                                        online_only_in_audience,
+                                        strangers_in_audience,
+                                        other_in_audience,
+                                        survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s);'''
+
+    insert_into_all_devices_response = '''INSERT INTO all_devices_responses(
+                                            use_on_iPhone,
+                                            use_on_iPad,
+                                            use_on_MacBook,
+                                            use_on_iMac,
+                                            use_on_iOS_Other,
+                                            iOS_Other_desc,
+                                            use_on_Samsung_Phone,
+                                            use_on_Samsung_Tablet,
+                                            use_on_Samsung_Other,
+                                            Samsung_Other_desc,
+                                            use_on_Google_Phone,
+                                            use_on_Google_Tablet,
+                                            use_on_Google_Other,
+                                            Google_Other_desc,
+                                            use_on_LG_Phone,
+                                            use_on_LG_Other,
+                                            LG_Other_desc,
+                                            use_on_Motorola_Phone,
+                                            use_on_Motorola_Other,
+                                            Motorola_Other_desc,
+                                            use_on_HTC_Phone,
+                                            use_on_HTC_Other,
+                                            HTC_Other_desc,
+                                            use_on_Amazon_Kindle,
+                                            use_on_Blackberry_Phone,
+                                            use_on_Blackberry_Tablet,
+                                            use_on_Blackberry_Other,
+                                            Blackberry_Other_desc,
+                                            use_on_Windows_Phone,
+                                            use_on_Windows_Tablet,
+                                            use_on_Windows_Laptop,
+                                            use_on_Windows_Desktop,
+                                            use_on_Windows_Other,
+                                            Windows_Other_desc,
+                                            use_on_Other,
+                                            Other_desc,
+                                            survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                                                              %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                                                              %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                                                              %s,%s,%s,%s,%s,%s,%s);'''
+
+    insert_into_future_contact_response = '''INSERT INTO future_contact_responses(
+                                                future_contact,
+                                                survey_id) VALUES(%s,%s);'''

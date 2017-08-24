@@ -31,12 +31,6 @@ img {
     padding-bottom: 15px;
 }
 
-.manual-radio {
-    height: 100%;
-    margin-top: -5px;
-    vertical-align: middle;
-}
-
 .small-text {
     font-size: 90%;
 }
@@ -46,6 +40,7 @@ img {
     border-width: thin;
     padding: 15px;
     background-color: #ffffff;
+    max-width: 400px;
 }
 
 .short-text-field {
