@@ -1,7 +1,16 @@
 # app/models.py
 # -*- coding: utf-8 -*-
 
+from . import engine
+
 class Survey:
+    platforms = [('Apple',1),
+                 ('Google',2),
+                 ('HTC',3),
+                 ('LG',4),
+                 ('Microsoft',5),
+                 ('Samsung',6),
+                 ('Twitter',7)]
 
     # COMMON
     show_tweet = "You recently tweeted:"
@@ -212,6 +221,14 @@ class Queries:
 
     emoji_rendering_img_query = '''SELECT display_url FROM renderings WHERE emoji_id=%s AND platform_version_id=%s;'''
 
+    platforms_renderings_for_emoji = '''SELECT renderings.platform_version_id,version_name,post_version_id,isChanged,display_url
+                                        FROM renderings
+                                        JOIN platform_versions ON renderings.platform_version_id=platform_versions.platform_version_id
+                                        WHERE emoji_id=%s AND platform_versions.platform_id=%s
+                                        AND (post_version_id is NULL OR isChanged=True)
+                                        AND release_date>'2013-09-01'
+                                        ORDER BY rendering_id;'''
+
     # INSERT QUERIES
     insert_consent_response = '''REPLACE INTO consent_responses(consent,survey_id) VALUES(%s,%s);'''
 
@@ -319,3 +336,68 @@ class Queries:
     insert_future_contact_response = '''REPLACE INTO future_contact_responses(
                                                 future_contact,
                                                 survey_id) VALUES(%s,%s);'''
+
+    def get_tweet_for_survey(survey_id):
+        conn = engine.connect()
+        result = conn.execute(Queries.tweet_query,(survey_id))
+        tweet_id,tweet,source_id = result.fetchone()
+        result.close()
+
+        # Render the tweet as text so participants see the native emoji, except
+        # if the tweet is from the Twitter Web Client, hard code the emoji as Twitter's rendering
+        if source_id == 4:
+            tweet = ''
+            result = conn.execute(Queries.tweet_fragments_query,(tweet_id))
+            for is_text,text,emoji_id in result.fetchall():
+                if is_text:
+                    tweet += text
+                else:
+                    # 34 is the platform_version_id for the only Twitter platform version (Twemoji 2.3)
+                    result = conn.execute(Queries.emoji_rendering_img_query,(emoji_id,34))
+                    display_url = result.fetchone()
+                    tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url[0])
+                    result.close()
+
+        return (tweet_id,tweet,source_id)
+
+    def get_tweet_versions(tweet_id):
+        conn = engine.connect()
+        tweet_fragments = []
+        emoji_platform_versions = []
+        platform_version_dict = {}
+        emoji_platform_version_renderings = {}
+        result = conn.execute(Queries.tweet_fragments_query,(tweet_id))
+        for is_text,text,emoji_id in result.fetchall():
+            tweet_fragments.append((is_text,text,emoji_id))
+
+            # for an emoji, get all of its eligible renderings
+            if not is_text:
+                # for each platform, get the renderings of the emoji
+                for platform_name,platform_id in Survey.platforms:
+                    result = conn.execute(Queries.platforms_renderings_for_emoji,(emoji_id,platform_id))
+                    skip = False
+                    for platform_version_id,version_name,post_version_id,isChanged,display_url in result.fetchall():
+                        platform_version_dict[platform_version_id] = (platform_name,version_name)
+                        if skip:
+                            skip = False
+                            continue
+                        if platform_version_id not in emoji_platform_versions:
+                            emoji_platform_versions.append(platform_version_id)
+                        emoji_platform_version_renderings[(platform_version_id,emoji_id)] = display_url
+                        if not post_version_id and not isChanged:
+                            skip = True
+
+        emoji_platform_versions.sort()
+        tweets = []
+        for platform_version_id in emoji_platform_versions:
+            tweet = ''
+            for is_text,text,emoji_id in tweet_fragments:
+                if is_text:
+                    tweet += text
+                else:
+                    tweet += "<img src=\"{0}\" width=\"20px\" />".format(emoji_platform_version_renderings[(platform_version_id,emoji_id)])
+
+            (platform_name,version_name) = platform_version_dict[platform_version_id]
+            tweets.append((platform_name,version_name,tweet))
+
+        return tweets

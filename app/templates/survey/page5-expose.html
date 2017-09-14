@@ -6,11 +6,21 @@
 <form class="form form-horizontal survey-background" method="post" role="form">
     <div class="container">
         <p>{{ form_text.show_tweet }}</p>
-        <div class="tweet-box">Show tweet with emoji here</div>
+        <div class="push-right tweet-box">{{ tweet | safe }}</div>
         <br/>
         <br/>
         <p>{{ form_text.expose }}</p>
-        <div class="tweet-box">Show tweets with emoji here</div>
+        <div class="push-right tweet-box">
+            {% for (platform_name,version_name,tweet_text) in tweets %}
+                <div class="row align-items-center">
+                    <div class="col-8"><p>{{ tweet_text | safe }}</p></div>
+
+                    <div class="col smaller-text">
+                        <b><p>{{ platform_name }} {{ version_name }}</p></b>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
         <br/>
         <br/>
 

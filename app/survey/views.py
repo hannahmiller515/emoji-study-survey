@@ -47,12 +47,12 @@ def page_one_age():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.handle = form.handle.data.lower()
+        handle = form.handle.data.lower()
         conn = engine.connect()
         result = conn.execute(Queries.handle_query,(session['survey_id']))
         survey_handle = result.fetchone()
         result.close()
-        if survey_handle[0].lower() != Survey.handle or survey_handle[0].lower() != Survey.handle.lstrip('@'):
+        if survey_handle[0].lower() != handle or survey_handle[0].lower() != handle.lstrip('@'):
             print('wrong survey handle: expected {0} got {1}'.format(survey_handle[0].lower(),Survey.handle))
             return redirect(url_for("survey.wrong_handle"))
 
@@ -124,39 +124,21 @@ def page_three_appear():
         appear = None
         appear_explanation = None
         if form.appear.data == 'no':
-            Survey.appear = False
+            appear = False
         elif form.appear.data == 'yes':
-            Survey.appear = True
+            appear = True
         if not form.appear_explanation.data == '':
-            Survey.appear_explanation = form.appear_explanation.data
+            appear_explanation = form.appear_explanation.data
 
         conn = engine.connect()
         conn.execute(Queries.insert_appearance_response, (appear, appear_explanation, session['survey_id']))
 
         return redirect(url_for('survey.page_four_emojirole'))
 
-    # GET
-    conn = engine.connect()
-    result = conn.execute(Queries.tweet_query,(session['survey_id']))
-    tweet_id,tweet,source_id = result.fetchone()
-    print(tweet)
-    result.close()
-
-    # Render the tweet as text so participants see the native emoji, except
-    # if the tweet is from the Twitter Web Client, hard code the emoji as Twitter's rendering
-    if source_id == 4:
-        tweet = ''
-        result = conn.execute(Queries.tweet_fragments_query,(tweet_id))
-        for is_text,text,emoji_id in result.fetchall():
-            if is_text:
-                tweet += text
-            else:
-                # 34 is the platform_version_id for the only Twitter platform version (Twemoji 2.3)
-                result = conn.execute(Queries.emoji_rendering_img_query,(emoji_id,34))
-                display_url = result.fetchone()
-                tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url)
-                result.close()
     #GET
+    tweet_id,tweet,source_id = Queries.get_tweet_for_survey(session['survey_id'])
+    session['tweet_id'] = tweet_id
+    session['tweet'] = tweet
     return render_template('survey/page3-appear.html', form=form, form_text=Survey.page_three_appear, tweet=tweet)
 
 @survey.route('/survey/4', methods=['GET','POST'])
@@ -175,7 +157,12 @@ def page_four_emojirole():
         return redirect(url_for('survey.page_five_expose'))
 
     #GET
-    return render_template('survey/page4-emojirole.html', form=form, form_text=Survey.page_four_emojirole)
+    tweet = session.get('tweet',None)
+    if not tweet:
+        tweet_id,tweet,source_id = Queries.get_tweet_for_survey(session['survey_id'])
+        session['tweet_id'] = tweet_id
+        session['tweet'] = tweet
+    return render_template('survey/page4-emojirole.html', form=form, form_text=Survey.page_four_emojirole, tweet=tweet)
 
 @survey.route('/survey/5', methods=['GET','POST'])
 def page_five_expose():
@@ -197,7 +184,14 @@ def page_five_expose():
             return redirect(url_for('survey.page_seven_eval'))
 
     # GET
-    return render_template('survey/page5-expose.html', form=form, form_text=Survey.page_five_expose)
+    tweet = session.get('tweet',None)
+    if not tweet:
+        tweet_id,tweet,source_id = Queries.get_tweet_for_survey(session['survey_id'])
+        session['tweet_id'] = tweet_id
+        session['tweet'] = tweet
+    tweets = Queries.get_tweet_versions(session['tweet_id'])
+    session['tweets'] = tweets
+    return render_template('survey/page5-expose.html', form=form, form_text=Survey.page_five_expose,tweet=tweet,tweets=tweets)
 
 @survey.route('/survey/6', methods=['GET','POST'])
 def page_six_explain():
@@ -256,7 +250,18 @@ def page_seven_eval():
 
         return redirect(url_for('survey.page_eight_follow'))
 
-    return render_template('survey/page7-eval.html', form=form, form_text=Survey.page_seven_eval)
+    #GET
+    tweet = session.get('tweet',None)
+    if not tweet:
+        tweet_id,tweet,source_id = Queries.get_tweet_for_survey(session['survey_id'])
+        session['tweet_id'] = tweet_id
+        session['tweet'] = tweet
+
+    tweets = session.get('tweets',None)
+    if not tweets:
+        tweets = Queries.get_tweet_versions(session['tweet_id'])
+        session['tweets'] = tweets
+    return render_template('survey/page7-eval.html', form=form, form_text=Survey.page_seven_eval, tweet=tweet, tweets=tweets)
 
 @survey.route('/survey/8', methods=['GET','POST'])
 def page_eight_follow():

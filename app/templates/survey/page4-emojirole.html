@@ -6,7 +6,7 @@
 <form class="form form-horizontal survey-background" method="post" role="form">
     <div class="container">
         <p>{{ form_text.show_tweet }}</p>
-        <div class="tweet-box">Show tweet with emoji here</div>
+        <div class="push-right tweet-box">{{ tweet | safe }}</div>
         <br/>
         <br/>
         <p>{{ form_text.emoji_role }}</p>

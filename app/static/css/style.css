@@ -21,7 +21,7 @@ td {
     vertical-align: middle;
 }
 
-img {
+.header-img {
     position: relative;
     max-width: 100%;
     max-height: 60px;
@@ -35,12 +35,19 @@ img {
     font-size: 90%;
 }
 
+.smaller-text {
+    font-size: 80%;
+}
+
 .tweet-box {
+    display: inline-block;
     border-style: solid;
     border-width: thin;
     padding: 15px;
     background-color: #ffffff;
-    max-width: 400px;
+    #max-width: 400px;
+    width: auto;
+    max-width: 600px;
 }
 
 .short-text-field {
