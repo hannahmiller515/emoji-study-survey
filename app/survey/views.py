@@ -1,12 +1,11 @@
 # app/survey/views.py
 
-from flask import render_template, redirect, send_from_directory, url_for, request
-import os
+from flask import render_template, redirect, url_for, request, session
 
 from . import survey
 from .forms import ConsentForm,AgeForm,DeviceForm,AppearForm,EmojiRoleForm,ExposeForm,ExplainForm,EvalForm,FollowForm,AudienceForm,FutureForm
 from ..models import Survey,Queries
-#from .. import engine
+from .. import engine
 
 @survey.route('/')
 def route_to_website():
@@ -21,15 +20,18 @@ def informed_consent(survey_id=None):
     form = ConsentForm()
     # POST
     if request.method == "POST" and form.validate_on_submit():
+        conn = engine.connect()
         if form.consent.data == "no":
+            conn.execute(Queries.insert_consent_response, (False, session['survey_id']))
             return redirect(url_for('survey.consent_not_given'))
         elif form.consent.data == "yes":
+            conn.execute(Queries.insert_consent_response, (True, session['survey_id']))
             return redirect(url_for('survey.page_one_age'))
 
     # GET
     # Get the survey id out of the URL
     if survey_id != None:
-        Survey.survey_id = int(survey_id)
+        session['survey_id'] = int(survey_id)
 
     else:
         return redirect("http://z.umn.edu/emojistudy")
@@ -45,12 +47,17 @@ def page_one_age():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.age = int(form.age.data)
-        Survey.handle = form.handle.data
-        # TODO verify handle
+        Survey.handle = form.handle.data.lower()
+        conn = engine.connect()
+        result = conn.execute(Queries.handle_query,(session['survey_id']))
+        survey_handle = result.fetchone()
+        result.close()
+        if survey_handle[0].lower() != Survey.handle or survey_handle[0].lower() != Survey.handle.lstrip('@'):
+            print('wrong survey handle: expected {0} got {1}'.format(survey_handle[0].lower(),Survey.handle))
+            return redirect(url_for("survey.wrong_handle"))
 
-        #conn = engine.connect()
-        #conn.execute(Queries.insert_age_response, (Survey.age, Survey.survey_id))
+        age = int(form.age.data)
+        conn.execute(Queries.insert_age_response, (age, session['survey_id']))
 
         if form.age.data == "0":
             return redirect(url_for("survey.under_18"))
@@ -59,6 +66,10 @@ def page_one_age():
 
     #GET
     return render_template('survey/page1-age.html', form=form, form_text=Survey.page_one_age)
+
+@survey.route('/survey/handle_error')
+def wrong_handle():
+    return render_template('survey/wrong_handle.html', wrong_handle=Survey.page_one_age["wrong_handle"])
 
 @survey.route('/survey/under18')
 def under_18():
@@ -91,9 +102,13 @@ def page_two_device():
         elif device == "Other":
             device_other = form.Other.data
 
-        Survey.emoji_device_indicator = form.emoji.data
-        Survey.device = device
-        Survey.device_other = device_other
+        #TODO handle emoji device indicator
+        emoji_device_indicator = form.emoji.data
+        device = device
+        device_other = device_other
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_device_response, (device, device_other, session['survey_id']))
 
         return redirect(url_for('survey.page_three_appear'))
 
@@ -106,13 +121,43 @@ def page_three_appear():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.appear = form.appear.data
+        appear = None
+        appear_explanation = None
+        if form.appear.data == 'no':
+            Survey.appear = False
+        elif form.appear.data == 'yes':
+            Survey.appear = True
         if not form.appear_explanation.data == '':
             Survey.appear_explanation = form.appear_explanation.data
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_appearance_response, (appear, appear_explanation, session['survey_id']))
+
         return redirect(url_for('survey.page_four_emojirole'))
 
+    # GET
+    conn = engine.connect()
+    result = conn.execute(Queries.tweet_query,(session['survey_id']))
+    tweet_id,tweet,source_id = result.fetchone()
+    print(tweet)
+    result.close()
+
+    # Render the tweet as text so participants see the native emoji, except
+    # if the tweet is from the Twitter Web Client, hard code the emoji as Twitter's rendering
+    if source_id == 4:
+        tweet = ''
+        result = conn.execute(Queries.tweet_fragments_query,(tweet_id))
+        for is_text,text,emoji_id in result.fetchall():
+            if is_text:
+                tweet += text
+            else:
+                # 34 is the platform_version_id for the only Twitter platform version (Twemoji 2.3)
+                result = conn.execute(Queries.emoji_rendering_img_query,(emoji_id,34))
+                display_url = result.fetchone()
+                tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url)
+                result.close()
     #GET
-    return render_template('survey/page3-appear.html', form=form, form_text=Survey.page_three_appear)
+    return render_template('survey/page3-appear.html', form=form, form_text=Survey.page_three_appear, tweet=tweet)
 
 @survey.route('/survey/4', methods=['GET','POST'])
 def page_four_emojirole():
@@ -120,9 +165,13 @@ def page_four_emojirole():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.needs_emoji = int(form.needs_emoji.data)
-        Survey.could_remove = int(form.could_remove.data)
-        Survey.could_substitute = int(form.could_substitute.data)
+        needs_emoji = int(form.needs_emoji.data)
+        could_remove = int(form.could_remove.data)
+        could_substitute = int(form.could_substitute.data)
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_emoji_role_response, (needs_emoji, could_remove, could_substitute, session['survey_id']))
+
         return redirect(url_for('survey.page_five_expose'))
 
     #GET
@@ -134,13 +183,18 @@ def page_five_expose():
 
     # POST
     if request.method == "POST" and form.validate_on_submit():
+        conn = engine.connect()
         if form.aware.data == "no":
-            Survey.aware = False
+            aware = False
+            conn.execute(Queries.insert_awareness_response, (aware, session['survey_id']))
+
             return redirect(url_for('survey.page_six_explain'))
         elif form.aware.data == "yes":
-            Survey.aware = True
+            aware = True
+            conn.execute(Queries.insert_awareness_response, (aware, session['survey_id']))
+
             #TODO figure out what to do for those that already know
-            #return redirect(url_for('survey.'))
+            return redirect(url_for('survey.page_seven_eval'))
 
     # GET
     return render_template('survey/page5-expose.html', form=form, form_text=Survey.page_five_expose)
@@ -151,9 +205,14 @@ def page_six_explain():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.reaction = form.reaction.data
+        reaction = form.reaction.data
+        describe_reaction = None
         if not form.describe_reaction.data == '':
-            Survey.describe_reaction = form.describe_reaction.data
+            describe_reaction = form.describe_reaction.data
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_reaction_response, (reaction, describe_reaction, session['survey_id']))
+
         return redirect(url_for('survey.page_seven_eval'))
 
     #GET
@@ -165,18 +224,38 @@ def page_seven_eval():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.same_message = form.same_message.data
+        same_message = form.same_message.data
+        same_message_explanation = None
         if not form.same_message_explanation == '':
-            Survey.same_message_explanation = form.same_message_explanation.data
-        Survey.same_interpretation = form.same_interpretation.data
+            same_message_explanation = form.same_message_explanation.data
+
+        same_interpretation = form.same_interpretation.data
+        same_interpretation_explanation = None
         if not form.same_interpretation_explanation == '':
-            Survey.same_interpretation_explanation = form.same_interpretation_explanation.data
-        Survey.send_tweet = form.send_tweet.data
+            same_interpretation_explanation = form.same_interpretation_explanation.data
+
+        send_tweet = None
+        send_tweet_explanation = None
+        if form.send_tweet.data == 'no':
+            send_tweet = False
+        elif form.send_tweet.data == 'yes':
+            send_tweet = True
         if not form.send_tweet_explanation == '':
-            Survey.send_tweet_explanation = form.send_tweet_explanation.data
-        Survey.edit_tweet = int(form.edit_tweet.data)
+            send_tweet_explanation = form.send_tweet_explanation.data
+
+        edit_tweet = int(form.edit_tweet.data)
+        edit_tweet_other = None
         if not form.edit_tweet_other == '':
-            Survey.edit_tweet_other = form.edit_tweet_other.data
+            edit_tweet_other = form.edit_tweet_other.data
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_evaluation_response, (same_message, same_message_explanation,
+                                                          same_interpretation, same_interpretation_explanation,
+                                                          send_tweet, send_tweet_explanation,
+                                                          edit_tweet, edit_tweet_other, session['survey_id']))
+
+        return redirect(url_for('survey.page_eight_follow'))
+
     return render_template('survey/page7-eval.html', form=form, form_text=Survey.page_seven_eval)
 
 @survey.route('/survey/8', methods=['GET','POST'])
@@ -185,15 +264,36 @@ def page_eight_follow():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        Survey.emoji_frequency = int(form.emoji_frequency.data)
-        Survey.effect_Twitter = form.effect_Twitter.data
-        Survey.effect_communication = form.effect_communication.data
+        emoji_frequency = int(form.emoji_frequency.data)
+
+        impression = None
         if not form.impression.data == '':
-            Survey.impression = form.impression.data
+            impression = form.impression.data
+
+        effect_Twitter = None
+        effect_Twitter_explanation = None
+        if form.effect_Twitter.data == 'no':
+            effect_Twitter = False
+        elif form.effect_Twitter.data == 'yes':
+            effect_Twitter = True
         if not form.effect_Twitter_explanation.data == '':
-            Survey.effect_Twitter_explanation = form.effect_Twitter_explanation.data
-        if not form.effect_communication_explanation == '':
-            Survey.effect_communication_explanation = form.effect_communication_explanation.data
+            effect_Twitter_explanation = form.effect_Twitter_explanation.data
+
+        effect_communication = None
+        effect_communication_explanation = None
+        if form.effect_communication.data == 'no':
+            effect_communication = False
+        elif form.effect_communication.data == 'yes':
+            effect_communication = True
+        if not form.effect_communication_explanation.data == '':
+            effect_communication_explanation = form.effect_communication_explanation.data
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_follow_response, (emoji_frequency, impression,
+                                                      effect_Twitter, effect_Twitter_explanation,
+                                                      effect_communication, effect_communication_explanation,
+                                                      session['survey_id']))
+
         return redirect(url_for('survey.page_nine_audience'))
 
     #GET
@@ -205,63 +305,122 @@ def page_nine_audience():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
+        # AUDIENCE DATA
+        audience_description = None
         if not form.audience_description.data == '':
-            Survey.audience_description = form.audience_description.data
+            audience_description = form.audience_description.data
 
-        Survey.friends_in_audience = form.friends_in_audience.data
-        Survey.family_in_audience = form.family_in_audience.data
-        Survey.professional_in_audience = form.professional_in_audience.data
-        Survey.online_only_in_audience = form.online_only_in_audience.data
-        Survey.strangers_in_audience = form.strangers_in_audience.data
-        Survey.other_in_audience = form.other_in_audience.data
+        friends_in_audience = form.friends_in_audience.data
+        family_in_audience = form.family_in_audience.data
+        professional_in_audience = form.professional_in_audience.data
+        online_only_in_audience = form.online_only_in_audience.data
+        strangers_in_audience = form.strangers_in_audience.data
+        other_in_audience = form.other_in_audience.data
+        other_in_audience_desc = None
         if not form.other_in_audience_desc.data == '':
-            Survey.other_in_audience_desc = form.other_in_audience_desc.data
+            other_in_audience_desc = form.other_in_audience_desc.data
 
-        Survey.use_on_iPhone = form.use_on_iPhone.data
-        Survey.use_on_iPad = form.use_on_iPad.data
-        Survey.use_on_MacBook = form.use_on_MacBook.data
-        Survey.use_on_iMac = form.use_on_iMac.data
-        Survey.use_on_iOS_Other = form.use_on_iOS_Other.data
+        conn = engine.connect()
+        conn.execute(Queries.insert_audience_response, (audience_description, friends_in_audience,
+                                                                              family_in_audience,
+                                                                              professional_in_audience,
+                                                                              online_only_in_audience,
+                                                                              strangers_in_audience,
+                                                                              other_in_audience, other_in_audience_desc, session['survey_id']))
+        # ALL DEVICES DATA
+        use_on_iPhone = form.use_on_iPhone.data
+        use_on_iPad = form.use_on_iPad.data
+        use_on_MacBook = form.use_on_MacBook.data
+        use_on_iMac = form.use_on_iMac.data
+        use_on_iOS_Other = form.use_on_iOS_Other.data
+        iOS_Other_desc = None
         if not form.iOS_Other_desc.data == '':
-            Survey.iOS_Other_desc = form.iOS_Other_desc.data
-        Survey.use_on_Samsung_Phone = form.use_on_Samsung_Phone.data
-        Survey.use_on_Samsung_Tablet = form.use_on_Samsung_Tablet.data
-        Survey.use_on_Samsung_Other = form.use_on_Samsung_Other.data
+            iOS_Other_desc = form.iOS_Other_desc.data
+
+        use_on_Samsung_Phone = form.use_on_Samsung_Phone.data
+        use_on_Samsung_Tablet = form.use_on_Samsung_Tablet.data
+        use_on_Samsung_Other = form.use_on_Samsung_Other.data
+        Samsung_Other_desc = None
         if not form.Samsung_Other_desc.data == '':
-            Survey.Samsung_Other_desc = form.Samsung_Other_desc.data
-        Survey.use_on_Google_Phone = form.use_on_Google_Phone.data
-        Survey.use_on_Google_Tablet = form.use_on_Google_Tablet.data
-        Survey.use_on_Google_Other = form.use_on_Google_Other.data
+            Samsung_Other_desc = form.Samsung_Other_desc.data
+
+        use_on_Google_Phone = form.use_on_Google_Phone.data
+        use_on_Google_Tablet = form.use_on_Google_Tablet.data
+        use_on_Google_Other = form.use_on_Google_Other.data
+        Google_Other_desc = None
         if not form.Google_Other_desc.data == '':
-            Survey.Google_Other_desc = form.Google_Other_desc.data
-        Survey.use_on_LG_Phone = form.use_on_LG_Phone.data
-        Survey.use_on_LG_Other = form.use_on_LG_Other.data
+            Google_Other_desc = form.Google_Other_desc.data
+
+        use_on_LG_Phone = form.use_on_LG_Phone.data
+        use_on_LG_Other = form.use_on_LG_Other.data
+        LG_Other_desc = None
         if not form.LG_Other_desc.data == '':
-            Survey.LG_Other_desc = form.LG_Other_desc.data
-        Survey.use_on_Motorola_Phone = form.use_on_Motorola_Phone.data
-        Survey.use_on_Motorola_Other = form.use_on_Motorola_Other.data
+            LG_Other_desc = form.LG_Other_desc.data
+
+        use_on_Motorola_Phone = form.use_on_Motorola_Phone.data
+        use_on_Motorola_Other = form.use_on_Motorola_Other.data
+        Motorola_Other_desc = None
         if not form.Motorola_Other_desc.data == '':
-            Survey.Motorola_Other_desc = form.Motorola_Other_desc.data
-        Survey.use_on_HTC_Phone = form.use_on_HTC_Phone.data
-        Survey.use_on_HTC_Other = form.use_on_HTC_Other.data
+            Motorola_Other_desc = form.Motorola_Other_desc.data
+
+        use_on_HTC_Phone = form.use_on_HTC_Phone.data
+        use_on_HTC_Other = form.use_on_HTC_Other.data
+        HTC_Other_desc = None
         if not form.HTC_Other_desc.data == '':
-            Survey.HTC_Other_desc = form.HTC_Other_desc.data
-        Survey.use_on_Amazon_Kindle = form.use_on_Amazon_Kindle.data
-        Survey.use_on_Blackberry_Phone = form.use_on_Blackberry_Phone.data
-        Survey.use_on_Blackberry_Tablet = form.use_on_Blackberry_Tablet.data
-        Survey.use_on_Blackberry_Other = form.use_on_Blackberry_Other.data
+            HTC_Other_desc = form.HTC_Other_desc.data
+
+        use_on_Amazon_Kindle = form.use_on_Amazon_Kindle.data
+
+        use_on_Blackberry_Phone = form.use_on_Blackberry_Phone.data
+        use_on_Blackberry_Tablet = form.use_on_Blackberry_Tablet.data
+        use_on_Blackberry_Other = form.use_on_Blackberry_Other.data
+        Blackberry_Other_desc = None
         if not form.Blackberry_Other_desc.data == '':
-            Survey.Blackberry_Other_desc = form.Blackberry_Other_desc.data
-        Survey.use_on_Windows_Phone = form.use_on_Windows_Phone.data
-        Survey.use_on_Windows_Tablet = form.use_on_Windows_Tablet.data
-        Survey.use_on_Windows_Laptop = form.use_on_Windows_Laptop.data
-        Survey.use_on_Windows_Desktop = form.use_on_Windows_Desktop.data
-        Survey.use_on_Windows_Other = form.use_on_Windows_Other.data
+            Blackberry_Other_desc = form.Blackberry_Other_desc.data
+
+        use_on_Windows_Phone = form.use_on_Windows_Phone.data
+        use_on_Windows_Tablet = form.use_on_Windows_Tablet.data
+        use_on_Windows_Laptop = form.use_on_Windows_Laptop.data
+        use_on_Windows_Desktop = form.use_on_Windows_Desktop.data
+        use_on_Windows_Other = form.use_on_Windows_Other.data
+        Windows_Other_desc = None
         if not form.Windows_Other_desc.data == '':
-            Survey.Windows_Other_desc = form.Windows_Other_desc.data
-        Survey.use_on_Other = form.use_on_Other.data
+            Windows_Other_desc = form.Windows_Other_desc.data
+
+        use_on_Other = form.use_on_Other.data
+        Other_desc = None
         if not form.Other_desc.data == '':
-            Survey.Other_desc = form.Other_desc.data
+            Other_desc = form.Other_desc.data
+
+        conn.execute(Queries.insert_all_devices_response, (use_on_iPhone,
+                                                           use_on_iPad,
+                                                           use_on_MacBook,
+                                                           use_on_iMac,
+                                                           use_on_iOS_Other, iOS_Other_desc,
+                                                           use_on_Samsung_Phone,
+                                                           use_on_Samsung_Tablet,
+                                                           use_on_Samsung_Other, Samsung_Other_desc,
+                                                           use_on_Google_Phone,
+                                                           use_on_Google_Tablet,
+                                                           use_on_Google_Other, Google_Other_desc,
+                                                           use_on_LG_Phone,
+                                                           use_on_LG_Other, LG_Other_desc,
+                                                           use_on_Motorola_Phone,
+                                                           use_on_Motorola_Other, Motorola_Other_desc,
+                                                           use_on_HTC_Phone,
+                                                           use_on_HTC_Other, HTC_Other_desc,
+                                                           use_on_Amazon_Kindle,
+                                                           use_on_Blackberry_Phone,
+                                                           use_on_Blackberry_Tablet,
+                                                           use_on_Blackberry_Other, Blackberry_Other_desc,
+                                                           use_on_Windows_Phone,
+                                                           use_on_Windows_Tablet,
+                                                           use_on_Windows_Laptop,
+                                                           use_on_Windows_Desktop,
+                                                           use_on_Windows_Other, Windows_Other_desc,
+                                                           use_on_Other, Other_desc,
+                                                           session['survey_id']))
+
         return redirect(url_for('survey.page_ten_future'))
 
     #GET
@@ -273,12 +432,19 @@ def page_ten_future():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        print(form.contact_in_future.data)
-        Survey.contact_in_future = form.contact_in_future.data
+        if form.contact_in_future.data == 'no':
+            contact_in_future = False
+        if form.contact_in_future.data == 'yes':
+            contact_in_future = True
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_future_contact_response, (contact_in_future, session['survey_id']))
+
         return redirect(url_for('survey.end_survey'))
 
     return render_template('survey/page10-future.html', form=form, form_text=Survey.page_ten_future)
 
 @survey.route('/survey/end')
 def end_survey():
+    session.pop('survey_id', None)
     return render_template('survey/end.html', end_text=Survey.end_text)

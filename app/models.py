@@ -2,102 +2,6 @@
 # -*- coding: utf-8 -*-
 
 class Survey:
-    survey_id = None
-    handle = None
-
-    # age
-    age = None
-
-    # device
-    emoji_device_indicator = None
-    device = None
-    device_other = None
-
-    # appearance
-    appear = None
-    appear_explanation = None
-
-    # emoji role
-    needs_emoji = None
-    could_remove = None
-    could_substitute = None
-
-    # awareness
-    aware = None
-
-    # reaction
-    describe_reaction = None
-    reaction = None
-
-    # evaluation
-    same_message = None
-    same_message_explanation = None
-    same_interpretation = None
-    same_interpretation_explanation = None
-    send_tweet = None
-    send_tweet_explanation = None
-    edit_tweet = None
-    edit_tweet_other = None
-
-    # follow questions
-    emoji_frequency = None
-    impression = None
-    effect_Twitter = None
-    effect_Twitter_explanation = None
-    effect_communication = None
-    effect_communication_explanation = None
-
-    # audience
-    audience_description = None
-    friends_in_audience = None
-    family_in_audience = None
-    professional_in_audience = None
-    online_only_in_audience = None
-    strangers_in_audience = None
-    other_in_audience = None
-    other_in_audience_desc = None
-
-    # all devices
-    use_on_iPhone = None
-    use_on_iPad = None
-    use_on_MacBook = None
-    use_on_iMac = None
-    use_on_iOS_Other = None
-    iOS_Other_desc = None
-    use_on_Samsung_Phone = None
-    use_on_Samsung_Tablet = None
-    use_on_Samsung_Other = None
-    Samsung_Other_desc = None
-    use_on_Google_Phone = None
-    use_on_Google_Tablet = None
-    use_on_Google_Other = None
-    Google_Other_desc = None
-    use_on_LG_Phone = None
-    use_on_LG_Other = None
-    LG_Other_desc = None
-    use_on_Motorola_Phone = None
-    use_on_Motorola_Other = None
-    Motorola_Other_desc = None
-    use_on_HTC_Phone = None
-    use_on_HTC_Other = None
-    HTC_Other_desc = None
-    use_on_Amazon_Kindle = None
-    use_on_Blackberry_Phone = None
-    use_on_Blackberry_Tablet = None
-    use_on_Blackberry_Other = None
-    Blackberry_Other_desc = None
-    use_on_Windows_Phone = None
-    use_on_Windows_Tablet = None
-    use_on_Windows_Laptop = None
-    use_on_Windows_Desktop = None
-    use_on_Windows_Other = None
-    Windows_Other_desc = None
-    use_on_Other = None
-    Other_desc = None
-
-    # future contact
-    contact_in_future = None
-
 
     # COMMON
     show_tweet = "You recently tweeted:"
@@ -139,6 +43,8 @@ class Survey:
     page_one_age = {}
     page_one_age["handle"] = """This survey is tailored specifically to you and your twitter activity.
                                 Please enter your Twitter handle to help us confirm that we have the correct data:"""
+    page_one_age["wrong_handle"] = """We're sorry, but we do not have the correct data for the Twitter handle you
+                                      entered. Thank you for your time!"""
     page_one_age["age"] = "Please select your age:"
     page_one_age["age_options"] = [("0","< 18"),
                                    ("1","18-25"),
@@ -291,34 +197,53 @@ class Survey:
     end_text = "Your survey has been submitted. Thank you so much for your time and participation. Happy tweeting!"
 
 class Queries:
-    insert_age_response = '''INSERT INTO age_responses(age,survey_id) VALUES(%s,%s);'''
+    # RETRIEVAL QUERIES
+    handle_query = '''SELECT participant_twitter_handle FROM surveys WHERE survey_id=%s;'''
 
-    insert_device_response = '''INSERT INTO device_responses(
+    tweet_query = '''SELECT tweets.tweet_id,text,source_id
+                     FROM tweets
+                     JOIN surveys ON surveys.tweet_id=tweets.tweet_id
+                     WHERE survey_id=%s;'''
+
+    tweet_fragments_query = '''SELECT is_text,text,emoji_id
+                               FROM tweet_fragments
+                               WHERE tweet_id=%s
+                               ORDER BY sequence_index;'''
+
+    emoji_rendering_img_query = '''SELECT display_url FROM renderings WHERE emoji_id=%s AND platform_version_id=%s;'''
+
+    # INSERT QUERIES
+    insert_consent_response = '''REPLACE INTO consent_responses(consent,survey_id) VALUES(%s,%s);'''
+
+    insert_age_response = '''REPLACE INTO age_responses(age,survey_id) VALUES(%s,%s);'''
+
+    #TODO handle emoji device indicator
+    insert_device_response = '''REPLACE INTO device_responses(
                                     device,
                                     device_other,
                                     survey_id) VALUES(%s,%s,%s);'''
 
-    insert_appearance_response = '''INSERT INTO appearance_responses(
+    insert_appearance_response = '''REPLACE INTO appearance_responses(
                                         appears_same,
                                         explanation,
                                         survey_id) VALUES(%s,%s,%s);'''
 
-    insert_emoji_role_response = '''INSERT INTO emoji_role_responses(
+    insert_emoji_role_response = '''REPLACE INTO emoji_role_responses(
                                         needs_emoji,
                                         could_remove,
                                         could_substitute,
                                         survey_id) VALUES(%s,%s,%s,%s);'''
 
-    insert_into_awareness_response = '''INSERT INTO awareness_responses(
+    insert_awareness_response = '''REPLACE INTO awareness_responses(
                                             is_aware,
                                             survey_id) VALUES(%s,%s);'''
 
-    insert_into_reaction_response = '''INSERT INTO reaction_responses(
+    insert_reaction_response = '''REPLACE INTO reaction_responses(
                                             reaction_explanation,
                                             reaction_short,
                                             survey_id) VALUES(%s,%s,%s);'''
 
-    insert_into_evaluation_response = '''INSERT INTO evaluation_responses(
+    insert_evaluation_response = '''REPLACE INTO evaluation_responses(
                                             same_message,
                                             same_message_explanation,
                                             same_interpretation,
@@ -329,7 +254,7 @@ class Queries:
                                             edit_tweet_other,
                                             survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
 
-    insert_into_follow_response = '''INSERT INTO follow_responses(
+    insert_follow_response = '''REPLACE INTO follow_responses(
                                         emoji_frequency,
                                         impression,
                                         effect_Twitter,
@@ -338,7 +263,7 @@ class Queries:
                                         effect_communication_explanation,
                                         survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s);'''
 
-    insert_into_audience_response = '''INSERT INTO audience_responses(
+    insert_audience_response = '''REPLACE INTO audience_responses(
                                         audience_description,
                                         friends_in_audience,
                                         family_in_audience,
@@ -346,9 +271,10 @@ class Queries:
                                         online_only_in_audience,
                                         strangers_in_audience,
                                         other_in_audience,
-                                        survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s);'''
+                                        other_in_audience_desc,
+                                        survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
 
-    insert_into_all_devices_response = '''INSERT INTO all_devices_responses(
+    insert_all_devices_response = '''REPLACE INTO all_devices_responses(
                                             use_on_iPhone,
                                             use_on_iPad,
                                             use_on_MacBook,
@@ -390,6 +316,6 @@ class Queries:
                                                               %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                                                               %s,%s,%s,%s,%s,%s,%s);'''
 
-    insert_into_future_contact_response = '''INSERT INTO future_contact_responses(
+    insert_future_contact_response = '''REPLACE INTO future_contact_responses(
                                                 future_contact,
                                                 survey_id) VALUES(%s,%s);'''

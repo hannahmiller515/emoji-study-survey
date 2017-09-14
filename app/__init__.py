@@ -9,7 +9,7 @@ from flask_bootstrap import Bootstrap
 from config import app_config
 
 # db variable initialization
-#engine = None
+engine = None
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
@@ -18,8 +18,8 @@ def create_app(config_name):
 
     Bootstrap(app)
 
-    #global engine
-    #engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    global engine
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
     from app import models
 
     from .survey import survey as survey_blueprint
