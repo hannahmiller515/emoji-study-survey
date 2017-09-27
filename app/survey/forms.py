@@ -58,6 +58,13 @@ class ExplainForm(FlaskForm):
     reaction = StringField(Survey.page_six_explain["reaction"],validators=[InputRequired("Required")])
     submit = SubmitField('>>')
 
+class AwareForm(FlaskForm):
+    path = RadioField(choices=Survey.page_six_aware["path_options"],
+                      validators=[InputRequired("Required")])
+    path_other = StringField()
+    path_explanation = TextAreaField(Survey.explain)
+    submit = SubmitField('>>')
+
 class EvalForm(FlaskForm):
     same_message = RadioField(choices=Survey.page_seven_eval["same_message_options"],
                               validators=[InputRequired("Required")])
@@ -134,6 +141,18 @@ class AudienceForm(FlaskForm):
     Windows_Other_desc = StringField()
     use_on_Other = BooleanField("Other:")
     Other_desc = StringField()
+
+    # applications checkboxes
+    use_Hangouts = BooleanField("Google Hangouts")
+    use_Gmail = BooleanField("Gmail")
+    use_Email = BooleanField("Email (not Gmail)")
+    use_Facebook = BooleanField("Facebook")
+    use_Messenger = BooleanField("Facebook Messenger")
+    use_Instagram = BooleanField("Instagram")
+    use_Snapchat = BooleanField("Snapchat")
+    use_Slack = BooleanField("Slack")
+    use_Whatsapp = BooleanField("WhatsApp")
+
     submit = SubmitField('>>')
 
 class FutureForm(FlaskForm):

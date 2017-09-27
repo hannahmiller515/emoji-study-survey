@@ -5,14 +5,15 @@
 {% block body %}
 <form class="form form-horizontal survey-background" method="post" role="form">
     <div class="container">
-        <p>{{ form_text.here }}</p>
+        <p>{{ form_text.explain0 }}</p>
 
         <p>{{ form_text.explain1 }}</p>
 
-        <img class="container img-fluid rounded" src="{{ url_for('static', filename='img/same_emoji_demo.png') }}">
-        <br/>
-        <br/>
         <p>{{ form_text.explain2 }}</p>
+
+        <img class="img-fluid rounded mx-auto d-block" src="{{ url_for('static', filename='img/SameEmoji-smaller.png') }}">
+        <br/>
+        <p>{{ form_text.explain3 }}</p>
         <br/>
 
         {{ form.hidden_tag() }}

@@ -1,0 +1,45 @@
+<!-- app/templates/survey/page_six_explain.html-->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% block body %}
+<form class="form form-horizontal survey-background" method="post" role="form">
+    <div class="container">
+        <p>{{ form_text.explain0 }}</p>
+
+        {{ form.hidden_tag() }}
+
+        <br/>
+        <div class="form-group">
+            <p>{{ form_text.path }}</p>
+            <div class="container">
+                {% for radiofield in form.path %}
+                    <div class="controls-row">
+                        {{ radiofield(class="radio-inline") }}
+                        {{ radiofield.label(class="control-label") }}
+                    </div>
+                    {% if "Other" in radiofield.label.text %}
+                        <div class="controls-row">
+                            <div class="pad-bottom">{{ form.path_other(class="form-control short-text-field push-right") }}</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group has-danger">
+            <div class="container">
+                {% if form.path.errors %}
+                    <div class="form-control-feedback">{% for error in form.path.errors %}* {{ error }}{% endfor %}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group container">{{ wtf.form_field(form.path_explanation) }}</div>
+    </div>
+    <div class="push"></div>
+    <div class="footer">
+        <div class="container row justify-content-end">
+            {{ wtf.form_field(form.submit) }}
+        </div>
+    </div>
+</form>
+{% endblock %}

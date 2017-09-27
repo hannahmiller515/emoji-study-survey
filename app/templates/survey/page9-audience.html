@@ -72,6 +72,21 @@
                 <div class="pad-bottom">{{ form.Other_desc(class="form-control short-text-field push-right") }}</div>
             </div>
         </div>
+
+        <br/><p>{{ form_text.emoji_applications }}</p>
+        <div class="form-group">
+            <div class="container">
+                {{ wtf.form_field(form.use_Hangouts) }}
+                {{ wtf.form_field(form.use_Gmail) }}
+                {{ wtf.form_field(form.use_Email) }}
+                {{ wtf.form_field(form.use_Facebook) }}
+                {{ wtf.form_field(form.use_Messenger) }}
+                {{ wtf.form_field(form.use_Instagram) }}
+                {{ wtf.form_field(form.use_Snapchat) }}
+                {{ wtf.form_field(form.use_Slack) }}
+                {{ wtf.form_field(form.use_Whatsapp) }}
+            </div>
+        </div>
     </div>
     <div class="push"></div>
     <div class="footer">

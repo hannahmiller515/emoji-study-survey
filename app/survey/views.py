@@ -3,7 +3,7 @@
 from flask import render_template, redirect, url_for, request, session
 
 from . import survey
-from .forms import ConsentForm,AgeForm,DeviceForm,AppearForm,EmojiRoleForm,ExposeForm,ExplainForm,EvalForm,FollowForm,AudienceForm,FutureForm
+from .forms import ConsentForm,AgeForm,DeviceForm,AppearForm,EmojiRoleForm,ExposeForm,ExplainForm,AwareForm,EvalForm,FollowForm,AudienceForm,FutureForm
 from ..models import Survey,Queries
 from .. import engine
 
@@ -50,16 +50,16 @@ def page_one_age():
         handle = form.handle.data.lower()
         conn = engine.connect()
         result = conn.execute(Queries.handle_query,(session['survey_id']))
-        survey_handle = result.fetchone()
+        survey_handle = result.fetchone()[0].lower()
         result.close()
-        if survey_handle[0].lower() != handle or survey_handle[0].lower() != handle.lstrip('@'):
-            print('wrong survey handle: expected {0} got {1}'.format(survey_handle[0].lower(),Survey.handle))
+        if survey_handle != handle and ('@' + survey_handle) != handle:
+            print('wrong survey handle: expected {0} got {1}'.format(survey_handle,handle))
             return redirect(url_for("survey.wrong_handle"))
 
         age = int(form.age.data)
         conn.execute(Queries.insert_age_response, (age, session['survey_id']))
 
-        if form.age.data == "0":
+        if age == 0:
             return redirect(url_for("survey.under_18"))
 
         return redirect(url_for('survey.page_two_device'))
@@ -174,14 +174,12 @@ def page_five_expose():
         if form.aware.data == "no":
             aware = False
             conn.execute(Queries.insert_awareness_response, (aware, session['survey_id']))
-
             return redirect(url_for('survey.page_six_explain'))
+
         elif form.aware.data == "yes":
             aware = True
             conn.execute(Queries.insert_awareness_response, (aware, session['survey_id']))
-
-            #TODO figure out what to do for those that already know
-            return redirect(url_for('survey.page_seven_eval'))
+            return redirect(url_for('survey.page_six_aware'))
 
     # GET
     tweet = session.get('tweet',None)
@@ -193,7 +191,7 @@ def page_five_expose():
     session['tweets'] = tweets
     return render_template('survey/page5-expose.html', form=form, form_text=Survey.page_five_expose,tweet=tweet,tweets=tweets)
 
-@survey.route('/survey/6', methods=['GET','POST'])
+@survey.route('/survey/6-explain', methods=['GET','POST'])
 def page_six_explain():
     form = ExplainForm()
 
@@ -211,6 +209,32 @@ def page_six_explain():
 
     #GET
     return render_template('survey/page6-explain.html', form=form, form_text=Survey.page_six_explain)
+
+@survey.route('/survey/6-aware', methods=['GET','POST'])
+def page_six_aware():
+    form = AwareForm()
+
+    #POST
+    if request.method == "POST" and form.validate_on_submit():
+        aware_path = int(form.path.data)
+
+        aware_path_other = None
+        if not form.path_other.data == '':
+            aware_path_other = form.path_other.data
+        aware_explanation = None
+        if not form.path_explanation.data == '':
+            aware_explanation = form.path_explanation.data
+
+        conn = engine.connect()
+        conn.execute(Queries.insert_aware_response, (aware_path, aware_path_other, aware_explanation, session['survey_id']))
+
+        if aware_path == 5:
+            return redirect(url_for("survey.page_six_explain"))
+
+        return redirect(url_for('survey.page_seven_eval'))
+
+    #GET
+    return render_template('survey/page6-aware.html', form=form, form_text=Survey.page_six_aware)
 
 @survey.route('/survey/7', methods=['GET','POST'])
 def page_seven_eval():
@@ -425,6 +449,27 @@ def page_nine_audience():
                                                            use_on_Windows_Other, Windows_Other_desc,
                                                            use_on_Other, Other_desc,
                                                            session['survey_id']))
+
+        use_Hangouts = form.use_Hangouts.data
+        use_Gmail = form.use_Gmail.data
+        use_Email = form.use_Email.data
+        use_Facebook = form.use_Facebook.data
+        use_Messenger = form.use_Messenger.data
+        use_Instagram = form.use_Instagram.data
+        use_Snapchat = form.use_Snapchat.data
+        use_Slack = form.use_Slack.data
+        use_Whatsapp = form.use_Whatsapp.data
+
+        conn.execute(Queries.insert_emoji_applications_response, (use_Hangouts,
+                                                                  use_Gmail,
+                                                                  use_Email,
+                                                                  use_Facebook,
+                                                                  use_Messenger,
+                                                                  use_Instagram,
+                                                                  use_Snapchat,
+                                                                  use_Slack,
+                                                                  use_Whatsapp,
+                                                                  session['survey_id']))
 
         return redirect(url_for('survey.page_ten_future'))
 

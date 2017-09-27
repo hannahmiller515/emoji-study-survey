@@ -145,15 +145,20 @@ class Survey:
 
     # PAGE_SIX_EXPLAIN
     page_six_explain = {}
-    page_six_explain["here"] = "Since you said you did not know, here is a little explanation:"
+    page_six_explain["explain0"] = "Since you said you did not know, here is a little explanation:"
     page_six_explain["explain1"] = """To your device, an emoji is just like any other character
                                 (e.g., lower-case ‘a’, upper-case ‘B’) and needs to be rendered
-                                with a font. However, for emoji, fonts are unique to each device
-                                platform. For example, Apple has its own emoji font for iOS devices
-                                (e.g., iPhone, iPad, MacBook), Google has its own font for Android
-                                and Google devices (e.g., Nexus), etc. This means that the same
-                                emoji character looks different on different device platforms:"""
-    page_six_explain["explain2"] = """So when you use an emoji, you see your device’s rendition of
+                                with a font (e.g., Calibri, Times New Roman). However, for emoji,
+                                fonts are unique to device and communication platform vendors.
+                                For example, Apple has its own emoji font for iOS/macOS devices
+                                (e.g., iPhone, iPad, MacBook), Samsung has its own emoji font for
+                                Samsung devices (e.g., Galaxy phones, tablets), etc. Twitter has its
+                                own emoji font for when Twitter is viewed in a browser, but users see
+                                their own device's emoji when they view Twitter via a device's mobile
+                                Twitter app."""
+    page_six_explain["explain2"] = """All of this means that a given emoji character looks different
+                                      on different device platforms:"""
+    page_six_explain["explain3"] = """So when you use an emoji, you see your device’s rendition of
                                 the emoji. But when your followers view that emoji, they will see
                                 their device’s rendition of the emoji. If your devices have the same
                                 emoji font, then you will both see the same rendition of the emoji.
@@ -161,6 +166,19 @@ class Survey:
                                 see different renditions of the emoji."""
     page_six_explain["describe_reaction"] = "How would you describe your reaction to finding out that this is how emoji function? (Optional)"
     page_six_explain["reaction"] = "If you had to summarize your reaction in one or two words, what would it be?"
+
+    # PAGE SIXE AWARE
+    page_six_aware = {}
+    page_six_aware["explain0"] = """You say you are aware that emoji are rendered by fonts unique to
+                                    device and communication platform vendors. For example, you know
+                                    that when you use an emoji on Twitter, it will appear differently
+                                    to those who view it depending on which devices it is viewed on."""
+    page_six_aware["path"] = """Which of the following best describes how you became aware of this?"""
+    page_six_aware["path_options"] = [("1","Personal observation"),
+                                      ("2","Someone else told you"),
+                                      ("3","You read about it (e.g., in an article)"),
+                                      ("4","Other:"),
+                                      ("5","Actually, I did not know about this.")]
 
     # PAGE SEVEN EVAL
     page_seven_eval = {}
@@ -206,7 +224,8 @@ class Survey:
                                                 How would you describe your Twitter following (i.e., those that follow
                                                 you on Twitter)?"""
     page_nine_audience["audience"] = "Does your Twitter following contain… (please check all that apply)"
-    page_nine_audience["all_devices"] = "Please indicate all devices that you use Twitter on:"
+    page_nine_audience["all_devices"] = "Please indicate all devices that you use on a regular basis:"
+    page_nine_audience["emoji_applications"] = "Please indicate which of the following applications you use:"
 
     # PAGE TEN FUTURE
     page_ten_future = {}
@@ -291,6 +310,12 @@ class Queries:
                                             reaction_short,
                                             survey_id) VALUES(%s,%s,%s);'''
 
+    insert_aware_response = '''REPLACE INTO aware_responses(
+                                            aware_path,
+                                            aware_path_other,
+                                            aware_explanation,
+                                            survey_id) VALUES(%s,%s,%s,%s);'''
+
     insert_evaluation_response = '''REPLACE INTO evaluation_responses(
                                             same_message,
                                             same_message_explanation,
@@ -363,6 +388,18 @@ class Queries:
                                                               %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                                                               %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                                                               %s,%s,%s,%s,%s,%s,%s);'''
+
+    insert_emoji_applications_response = '''REPLACE INTO emoji_applications_responses(
+                                            use_Hangouts,
+                                            use_Gmail,
+                                            use_Email,
+                                            use_Facebook,
+                                            use_Messenger,
+                                            use_Instagram,
+                                            use_Snapchat,
+                                            use_Slack,
+                                            use_Whatsapp,
+                                            survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
 
     insert_future_contact_response = '''REPLACE INTO future_contact_responses(
                                                 future_contact,
