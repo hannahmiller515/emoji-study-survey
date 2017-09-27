@@ -1,5 +1,6 @@
 # app/survey/views.py
 
+import datetime
 from flask import render_template, redirect, url_for, request, session
 
 from . import survey
@@ -15,12 +16,12 @@ def route_to_website():
 def informed_consent(survey_id=None):
     """
     Render the informed consent template on the / route
-    TODO capture url id!
     """
     form = ConsentForm()
+    conn = engine.connect()
+
     # POST
     if request.method == "POST" and form.validate_on_submit():
-        conn = engine.connect()
         if form.consent.data == "no":
             conn.execute(Queries.insert_consent_response, (False, session['survey_id']))
             return redirect(url_for('survey.consent_not_given'))
@@ -29,9 +30,19 @@ def informed_consent(survey_id=None):
             return redirect(url_for('survey.page_one_age'))
 
     # GET
-    # Get the survey id out of the URL
+    # Get the survey id out of the URL and make sure it's a valid survey id
     if survey_id != None:
-        session['survey_id'] = int(survey_id)
+        survey_id_int = int(survey_id)
+        result = conn.execute(Queries.handle_query,(survey_id_int))
+        survey_handle_result = result.fetchone()
+        result.close()
+        if survey_handle_result:
+            session['twitter_handle'] = survey_handle_result[0].lower()
+        else:
+            return redirect("http://z.umn.edu/emojistudy")
+
+        conn.execute(Queries.survey_started,(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),survey_id_int))
+        session['survey_id'] = survey_id_int
 
     else:
         return redirect("http://z.umn.edu/emojistudy")
@@ -47,13 +58,11 @@ def page_one_age():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
-        handle = form.handle.data.lower()
         conn = engine.connect()
-        result = conn.execute(Queries.handle_query,(session['survey_id']))
-        survey_handle = result.fetchone()[0].lower()
-        result.close()
+        handle = form.handle.data.lower()
+        survey_handle = session['twitter_handle']
         if survey_handle != handle and ('@' + survey_handle) != handle:
-            print('wrong survey handle: expected {0} got {1}'.format(survey_handle,handle))
+            conn.execute(Queries.insert_wrong_handle_response,(handle,session['survey_id']))
             return redirect(url_for("survey.wrong_handle"))
 
         age = int(form.age.data)
@@ -509,5 +518,11 @@ def page_ten_future():
 
 @survey.route('/survey/end')
 def end_survey():
+    conn = engine.connect()
+    conn.execute(Queries.survey_completed,(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),session['survey_id']))
     session.pop('survey_id', None)
+    session.pop('twitter_handle', None)
+    session.pop('tweet_id',None)
+    session.pop('tweet',None)
+    session.pop('tweets',None)
     return render_template('survey/end.html', end_text=Survey.end_text)

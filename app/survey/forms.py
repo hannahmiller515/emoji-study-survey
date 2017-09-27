@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, RadioField, SubmitField, TextAreaField, BooleanField
-from wtforms.validators import InputRequired,DataRequired
+from wtforms.validators import InputRequired,Length
 
 from ..models import Survey
 
@@ -12,7 +12,8 @@ class ConsentForm(FlaskForm):
     submit = SubmitField('>>')
 
 class AgeForm(FlaskForm):
-    handle = StringField("Twitter Handle", validators=[InputRequired("Please enter your twitter handle.")])
+    handle = StringField("Twitter Handle", validators=[InputRequired("Please enter your twitter handle."),
+                                                       Length(max=15,message="Please enter a valid twitter handle, 15 characters or less.")])
     age = RadioField(choices=Survey.page_one_age["age_options"],
                      validators=[InputRequired("Please select your age.")])
     submit = SubmitField('>>')

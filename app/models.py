@@ -88,8 +88,6 @@ class Survey:
     page_two_device = {}
     page_two_device["emoji"] = """To help us ensure that emoji are appearing correctly in
                                 the survey, please select the emoji you see here: 💃"""
-    # TODO emoji options
-    #page_two_device["emoji_options"] = [("version1","<img src=\"https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/winking-face_1f609.png\" width=\"20px\" />")]
     device_emoji_result = conn.execute(get_emoji_for_device_indicator)
     page_two_device["emoji_options"] = []
     skip = False
@@ -314,6 +312,8 @@ class Queries:
     # INSERT QUERIES
     insert_consent_response = '''REPLACE INTO consent_responses(consent,survey_id) VALUES(%s,%s);'''
 
+    insert_wrong_handle_response = '''INSERT INTO wrong_handle_responses(attempt,survey_id) VALUES(%s,%s);'''
+
     insert_age_response = '''REPLACE INTO age_responses(age,survey_id) VALUES(%s,%s);'''
 
     insert_device_response = '''REPLACE INTO device_responses(
@@ -440,6 +440,14 @@ class Queries:
     insert_future_contact_response = '''REPLACE INTO future_contact_responses(
                                                 future_contact,
                                                 survey_id) VALUES(%s,%s);'''
+
+    survey_started = '''UPDATE surveys
+                        SET started=%s
+                        WHERE survey_id=%s;'''
+
+    survey_completed = '''UPDATE surveys
+                          SET submitted=%s
+                          WHERE survey_id=%s;'''
 
     def get_tweet_for_survey(survey_id):
         conn = engine.connect()
