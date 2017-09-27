@@ -81,15 +81,33 @@ class EvalForm(FlaskForm):
     submit = SubmitField('>>')
 
 class FollowForm(FlaskForm):
-    emoji_frequency = RadioField(choices=Survey.page_eight_follow["emoji_frequency_options"],
-                                 validators=[InputRequired("Required")])
     impression = TextAreaField(Survey.page_eight_follow["impression"])
     effect_Twitter = RadioField(choices=Survey.yes_no_options,
                                 validators=[InputRequired("Required")])
     effect_Twitter_explanation = TextAreaField(Survey.explain)
+
+    twitter_emoji_frequency = RadioField(choices=Survey.page_eight_follow["twitter_emoji_frequency_options"],
+                                 validators=[InputRequired("Required")])
+
     effect_communication = RadioField(choices=Survey.yes_no_options,
                                       validators=[InputRequired("Required")])
     effect_communication_explanation = TextAreaField(Survey.explain)
+
+    # applications checkboxes
+    use_Texts = BooleanField("Text Messages")
+    use_Hangouts = BooleanField("Google Hangouts")
+    use_Gmail = BooleanField("Gmail")
+    use_Email = BooleanField("Email (not Gmail)")
+    use_Facebook = BooleanField("Facebook")
+    use_Messenger = BooleanField("Facebook Messenger")
+    use_Instagram = BooleanField("Instagram")
+    use_Snapchat = BooleanField("Snapchat")
+    use_Slack = BooleanField("Slack")
+    use_Whatsapp = BooleanField("WhatsApp")
+
+    emoji_frequency = RadioField(choices=Survey.page_eight_follow["emoji_frequency_options"],
+                                 validators=[InputRequired("Required")])
+
     submit = SubmitField('>>')
 
 class AudienceForm(FlaskForm):
@@ -141,17 +159,6 @@ class AudienceForm(FlaskForm):
     Windows_Other_desc = StringField()
     use_on_Other = BooleanField("Other:")
     Other_desc = StringField()
-
-    # applications checkboxes
-    use_Hangouts = BooleanField("Google Hangouts")
-    use_Gmail = BooleanField("Gmail")
-    use_Email = BooleanField("Email (not Gmail)")
-    use_Facebook = BooleanField("Facebook")
-    use_Messenger = BooleanField("Facebook Messenger")
-    use_Instagram = BooleanField("Instagram")
-    use_Snapchat = BooleanField("Snapchat")
-    use_Slack = BooleanField("Slack")
-    use_Whatsapp = BooleanField("WhatsApp")
 
     submit = SubmitField('>>')
 

@@ -12,6 +12,14 @@ get_platform_versions_in_use = '''SELECT platform_id,platform_version_id,version
                                   WHERE in_use=TRUE
                                   ORDER BY platform_id,release_date desc;'''
 
+# Using emoji_id=935, Woman Dancing emoji, excluding Twitter (version<34) emoji because won't show up
+get_emoji_for_device_indicator = '''SELECT renderings.platform_version_id,post_version_id,is_changed,display_url
+                                    FROM renderings
+                                    JOIN platform_versions ON renderings.platform_version_id=platform_versions.platform_version_id
+                                    WHERE emoji_id=935 AND renderings.platform_version_id<34
+                                    AND (post_version_id IS NULL OR is_changed=True)
+                                    ORDER BY rendering_id;'''
+
 class Survey:
 
     conn = engine.connect()
@@ -79,9 +87,25 @@ class Survey:
     # PAGE TWO DEVICE
     page_two_device = {}
     page_two_device["emoji"] = """To help us ensure that emoji are appearing correctly in
-                                the survey, please select the emoji you see here: 😉"""
+                                the survey, please select the emoji you see here: 💃"""
     # TODO emoji options
-    page_two_device["emoji_options"] = [("version1","<img src=\"https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/winking-face_1f609.png\" width=\"20px\" />")]
+    #page_two_device["emoji_options"] = [("version1","<img src=\"https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/96/winking-face_1f609.png\" width=\"20px\" />")]
+    device_emoji_result = conn.execute(get_emoji_for_device_indicator)
+    page_two_device["emoji_options"] = []
+    skip = False
+    for platform_version_id,post_version_id,is_changed,display_url in device_emoji_result.fetchall():
+        if skip:
+            skip = False
+            continue
+
+        img_str = "<img src=\"{0}\" width=\"30px\" />".format(display_url)
+        page_two_device["emoji_options"].append((str(platform_version_id),img_str))
+
+        if not post_version_id and not is_changed:
+            skip = True
+    page_two_device["emoji_options"].append(("0","<img src=\"/static/img/not_supported.png\" />"))
+    page_two_device["emoji_options"].append(("-1","I do not see the emoji above as an option."))
+
     page_two_device["device"] = """Also to help us ensure the survey appears correctly, please
                                 indicate which device you are currently using:"""
     page_two_device["device_options"] = [("iPhone","iPhone"),
@@ -205,18 +229,26 @@ class Survey:
 
     # PAGE EIGHT FOLLOW
     page_eight_follow = {}
-    page_eight_follow["emoji_frequency"] = "How often do you include emoji in your tweets?"
-    page_eight_follow["emoji_frequency_options"] = [("0","Never"),
-                                                    ("1","Once in a while"),
-                                                    ("2","Pretty often"),
-                                                    ("3","Almost every tweet")]
     page_eight_follow["impression"] = """Now that you are aware that device platforms translate emoji renderings when you
                                         communicate across platforms, please describe your general impression of this:"""
     page_eight_follow["effect_Twitter"] = "In general, do you think this may have any effect on your Twitter communication?"
     page_eight_follow["effect_communication"] = """This is also the way emoji function in communication across platforms
-                                                outside of Twitter, like in SMS text messaging for example. Considering
+                                                outside of Twitter, like in text messaging for example. Considering
                                                 this, do you think this may have any affect on your direct communication
                                                 outside of Twitter (e.g., when you directly text a friend)?"""
+    page_eight_follow["emoji_applications"] = "Please indicate which of the following applications you use:"
+    page_eight_follow["twitter_emoji_frequency"] = "How often do you include emoji in your tweets?"
+    page_eight_follow["twitter_emoji_frequency_options"] = [("-2","Almost never"),
+                                                            ("-1","Once in a while"),
+                                                            ("0","Half of the time"),
+                                                            ("1","Pretty often"),
+                                                            ("2","Almost every tweet")]
+    page_eight_follow["emoji_frequency"] = "In general, how often do you include emoji in your digital communications?"
+    page_eight_follow["emoji_frequency_options"] = [("-2","Almost never"),
+                                                    ("-1","Once in a while"),
+                                                    ("0","Half of the time"),
+                                                    ("1","Pretty often"),
+                                                    ("2","Most of the time")]
 
     # PAGE NINE AUDIENCE
     page_nine_audience = {}
@@ -225,7 +257,7 @@ class Survey:
                                                 you on Twitter)?"""
     page_nine_audience["audience"] = "Does your Twitter following contain… (please check all that apply)"
     page_nine_audience["all_devices"] = "Please indicate all devices that you use on a regular basis:"
-    page_nine_audience["emoji_applications"] = "Please indicate which of the following applications you use:"
+
 
     # PAGE TEN FUTURE
     page_ten_future = {}
@@ -284,11 +316,13 @@ class Queries:
 
     insert_age_response = '''REPLACE INTO age_responses(age,survey_id) VALUES(%s,%s);'''
 
-    #TODO handle emoji device indicator
     insert_device_response = '''REPLACE INTO device_responses(
+                                    platform_version_of_emoji,
+                                    emoji_not_supported,
+                                    emoji_seen_not_option,
                                     device,
                                     device_other,
-                                    survey_id) VALUES(%s,%s,%s);'''
+                                    survey_id) VALUES(%s,%s,%s,%s,%s,%s);'''
 
     insert_appearance_response = '''REPLACE INTO appearance_responses(
                                         appears_same,
@@ -328,13 +362,27 @@ class Queries:
                                             survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
 
     insert_follow_response = '''REPLACE INTO follow_responses(
+                                        twitter_emoji_frequency,
                                         emoji_frequency,
                                         impression,
                                         effect_Twitter,
                                         effect_Twitter_explanation,
                                         effect_communication,
                                         effect_communication_explanation,
-                                        survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s);'''
+                                        survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s);'''
+
+    insert_emoji_applications_response = '''REPLACE INTO emoji_applications_responses(
+                                            use_Texts,
+                                            use_Hangouts,
+                                            use_Gmail,
+                                            use_Email,
+                                            use_Facebook,
+                                            use_Messenger,
+                                            use_Instagram,
+                                            use_Snapchat,
+                                            use_Slack,
+                                            use_Whatsapp,
+                                            survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
 
     insert_audience_response = '''REPLACE INTO audience_responses(
                                         audience_description,
@@ -388,18 +436,6 @@ class Queries:
                                                               %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                                                               %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                                                               %s,%s,%s,%s,%s,%s,%s);'''
-
-    insert_emoji_applications_response = '''REPLACE INTO emoji_applications_responses(
-                                            use_Hangouts,
-                                            use_Gmail,
-                                            use_Email,
-                                            use_Facebook,
-                                            use_Messenger,
-                                            use_Instagram,
-                                            use_Snapchat,
-                                            use_Slack,
-                                            use_Whatsapp,
-                                            survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);'''
 
     insert_future_contact_response = '''REPLACE INTO future_contact_responses(
                                                 future_contact,
@@ -511,7 +547,7 @@ class Queries:
                                 if display_url_result:
                                     tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url_result[0])
                                 else:
-                                    tweet += "<img src=\"{0}\" height=\"15px\" />".format(url_for('static',filename='img/not_supported.png'))
+                                    tweet += "<img src=\"{0}\" />".format(url_for('static',filename='img/not_supported.png'))
                         else:
                             tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url)
 
@@ -667,9 +703,9 @@ class Queries:
                                             tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url_result[0])
                                             showing_component = True
                                         else:
-                                            tweet += "<img src=\"{0}\" height=\"15px\" />".format(url_for('static',filename='img/not_supported.png'))
+                                            tweet += "<img src=\"{0}\" />".format(url_for('static',filename='img/not_supported.png'))
 
-                                    tweet += "<img src=\"{0}\" height=\"15px\" />".format(url_for('static',filename='img/not_supported.png'))
+                                    tweet += "<img src=\"{0}\" />".format(url_for('static',filename='img/not_supported.png'))
                                     showing_unsupported = True
 
                                     if codepoint=='1F3F4':

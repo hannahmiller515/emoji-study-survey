@@ -81,6 +81,16 @@ def page_two_device():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
+        emoji_device_indicator = int(form.emoji.data)
+        emoji_not_supported = False
+        emoji_seen_not_option = False
+        if emoji_device_indicator == 0:
+            emoji_not_supported = True
+            emoji_device_indicator = None
+        elif emoji_device_indicator == -1:
+            emoji_seen_not_option = True
+            emoji_device_indicator = None
+
         device = form.device.data
         device_other = None
         if device == "iOS_Other":
@@ -102,13 +112,13 @@ def page_two_device():
         elif device == "Other":
             device_other = form.Other.data
 
-        #TODO handle emoji device indicator
-        emoji_device_indicator = form.emoji.data
-        device = device
-        device_other = device_other
-
         conn = engine.connect()
-        conn.execute(Queries.insert_device_response, (device, device_other, session['survey_id']))
+        conn.execute(Queries.insert_device_response, (emoji_device_indicator,
+                                                      emoji_not_supported,
+                                                      emoji_seen_not_option,
+                                                      device,
+                                                      device_other,
+                                                      session['survey_id']))
 
         return redirect(url_for('survey.page_three_appear'))
 
@@ -293,6 +303,7 @@ def page_eight_follow():
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
+        twitter_emoji_frequency = int(form.twitter_emoji_frequency.data)
         emoji_frequency = int(form.emoji_frequency.data)
 
         impression = None
@@ -318,10 +329,33 @@ def page_eight_follow():
             effect_communication_explanation = form.effect_communication_explanation.data
 
         conn = engine.connect()
-        conn.execute(Queries.insert_follow_response, (emoji_frequency, impression,
-                                                      effect_Twitter, effect_Twitter_explanation,
+        conn.execute(Queries.insert_follow_response, (twitter_emoji_frequency, emoji_frequency,
+                                                      impression, effect_Twitter, effect_Twitter_explanation,
                                                       effect_communication, effect_communication_explanation,
                                                       session['survey_id']))
+
+        use_Texts = form.use_Texts.data
+        use_Hangouts = form.use_Hangouts.data
+        use_Gmail = form.use_Gmail.data
+        use_Email = form.use_Email.data
+        use_Facebook = form.use_Facebook.data
+        use_Messenger = form.use_Messenger.data
+        use_Instagram = form.use_Instagram.data
+        use_Snapchat = form.use_Snapchat.data
+        use_Slack = form.use_Slack.data
+        use_Whatsapp = form.use_Whatsapp.data
+
+        conn.execute(Queries.insert_emoji_applications_response, (use_Texts,
+                                                                  use_Hangouts,
+                                                                  use_Gmail,
+                                                                  use_Email,
+                                                                  use_Facebook,
+                                                                  use_Messenger,
+                                                                  use_Instagram,
+                                                                  use_Snapchat,
+                                                                  use_Slack,
+                                                                  use_Whatsapp,
+                                                                  session['survey_id']))
 
         return redirect(url_for('survey.page_nine_audience'))
 
@@ -449,27 +483,6 @@ def page_nine_audience():
                                                            use_on_Windows_Other, Windows_Other_desc,
                                                            use_on_Other, Other_desc,
                                                            session['survey_id']))
-
-        use_Hangouts = form.use_Hangouts.data
-        use_Gmail = form.use_Gmail.data
-        use_Email = form.use_Email.data
-        use_Facebook = form.use_Facebook.data
-        use_Messenger = form.use_Messenger.data
-        use_Instagram = form.use_Instagram.data
-        use_Snapchat = form.use_Snapchat.data
-        use_Slack = form.use_Slack.data
-        use_Whatsapp = form.use_Whatsapp.data
-
-        conn.execute(Queries.insert_emoji_applications_response, (use_Hangouts,
-                                                                  use_Gmail,
-                                                                  use_Email,
-                                                                  use_Facebook,
-                                                                  use_Messenger,
-                                                                  use_Instagram,
-                                                                  use_Snapchat,
-                                                                  use_Slack,
-                                                                  use_Whatsapp,
-                                                                  session['survey_id']))
 
         return redirect(url_for('survey.page_ten_future'))
 

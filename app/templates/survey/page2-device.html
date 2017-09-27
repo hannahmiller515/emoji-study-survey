@@ -7,10 +7,31 @@
     <div class="container">
         {{ form.hidden_tag() }}
 
-        <div class="form-group has-danger">
+        <div class="form-group">
             <p>{{ form_text.emoji }}</p>
             <div class="container">
-                {{ wtf.form_field(form.emoji) }}
+                <div class="row">
+                    <div class="col-md">
+                        {% set counter = [0] %}
+                        {% set num_cols = [0] %}
+                        {% for radiofield in form.emoji %}
+                            <div class="controls-row">
+                                {{ radiofield(class="radio-inline") }}
+                                {{ radiofield.label(class="control-label") }}
+                            </div>
+                            {% if counter.append(1) %}{% endif %}
+                            {% if counter|length > num_cols|length*4  %}
+                                </div>
+                                <div class="col-md">
+                                {% if num_cols.append(1) %}{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group has-danger">
+            <div class="container">
                 {% if form.emoji.errors %}
                     <div class="form-control-feedback">{% for error in form.emoji.errors %}* {{ error }}{% endfor %}</div>
                 {% endif %}
@@ -20,35 +41,50 @@
         <div class="form-group">
             <p>{{ form_text.device }}</p>
             <div class="container">
-                {% for radiofield in form.device %}
-                    <div class="controls-row">
-                        {{ radiofield(class="radio-inline") }}
-                        {{ radiofield.label(class="control-label") }}
-                    </div>
-                    {% if "Other" in radiofield.label.text %}
-                        <div class="controls-row">
-                            {% if "iOS" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.iOS_Other(class="form-control short-text-field push-right") }}</div>
-                            {% elif "Samsung" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.Samsung_Other(class="form-control short-text-field push-right") }}</div>
-                            {% elif "Google" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.Google_Other(class="form-control short-text-field push-right") }}</div>
-                            {% elif "LG" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.LG_Other(class="form-control short-text-field push-right") }}</div>
-                            {% elif "Motorola" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.Motorola_Other(class="form-control short-text-field push-right") }}</div>
-                            {% elif "HTC" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.HTC_Other(class="form-control short-text-field push-right") }}</div>
-                            {% elif "Blackberry" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.Blackberry_Other(class="form-control short-text-field push-right") }}</div>
-                            {% elif "Windows" in radiofield.label.text %}
-                                <div class="pad-bottom">{{ form.Windows_Other(class="form-control short-text-field push-right") }}</div>
-                            {% else %}
-                                <div class="pad-bottom">{{ form.Other(class="form-control short-text-field push-right") }}</div>
+                <div class="row">
+                    <div class="col-lg">
+                        {% set counter = [0] %}
+                        {% set num_cols = [0] %}
+                        {% for radiofield in form.device %}
+                            <div class="controls-row">
+                                {{ radiofield(class="radio-inline") }}
+                                {{ radiofield.label(class="control-label") }}
+                            </div>
+                            {% if counter.append(1) %}{% endif %}
+
+                            {% if "Other" in radiofield.label.text %}
+                                <div class="controls-row">
+                                    {% if "iOS" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.iOS_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% elif "Samsung" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.Samsung_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% elif "Google" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.Google_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% elif "LG" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.LG_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% elif "Motorola" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.Motorola_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% elif "HTC" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.HTC_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% elif "Blackberry" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.Blackberry_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% elif "Windows" in radiofield.label.text %}
+                                        <div class="pad-bottom">{{ form.Windows_Other(class="form-control short-text-field push-right") }}</div>
+                                    {% else %}
+                                        <div class="pad-bottom">{{ form.Other(class="form-control short-text-field push-right") }}</div>
+                                    {% endif %}
+                                </div>
+                                {% if counter.append(1) %}{% endif %}
                             {% endif %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
+
+                            {% if counter|length > num_cols|length*14  %}
+                                </div>
+                                <div class="col-lg">
+                                {% if num_cols.append(1) %}{% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="form-group has-danger">
