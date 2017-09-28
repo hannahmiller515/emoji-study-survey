@@ -89,6 +89,7 @@ class Survey:
     page_two_device["emoji"] = """To help us ensure that emoji are appearing correctly in
                                 the survey, please select the emoji you see here: 💃"""
     device_emoji_result = conn.execute(get_emoji_for_device_indicator)
+    conn.close()
     page_two_device["emoji_options"] = []
     skip = False
     for platform_version_id,post_version_id,is_changed,display_url in device_emoji_result.fetchall():
@@ -301,13 +302,13 @@ class Queries:
                                         WHERE emoji_id=%s AND platform_versions.platform_id=%s
                                         ORDER BY release_date desc;'''
 
-    OLD_platforms_renderings_for_emoji = '''SELECT renderings.platform_version_id,version_name,post_version_id,is_changed,display_url
-                                        FROM renderings
-                                        JOIN platform_versions ON renderings.platform_version_id=platform_versions.platform_version_id
-                                        WHERE emoji_id=%s AND platform_versions.platform_id=%s
-                                        AND (post_version_id is NULL OR isChanged=True)
-                                        AND release_date>'2013-09-01'
-                                        ORDER BY rendering_id;'''
+    tweet_analytics = '''UPDATE tweets
+                         SET num_tweet_versions=%s,
+                             num_unsupported=%s,
+                             num_showing_components=%s,
+                             num_showing_unsupported=%s,
+                             num_showing_component_unsupported_combo=%s
+                         WHERE tweet_id=%s'''
 
     # INSERT QUERIES
     insert_consent_response = '''REPLACE INTO consent_responses(consent,survey_id) VALUES(%s,%s);'''
@@ -470,6 +471,7 @@ class Queries:
                     tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url[0])
                     result.close()
 
+        conn.close()
         return (tweet_id,tweet,source_id)
 
 
@@ -608,18 +610,19 @@ class Queries:
                     # Assume the rendering has changed to include the most recent version,
                     # then working our way back, only include renderings that have changed
                     change_in_between_used_versions = True
-                    previous_rendering_in_survey = None
+                    previous_rendering_version_in_survey = None
                     for platform_version_id,version_name,version_display_name,in_use,is_changed,display_url in result.fetchall():
-                        # if it's in use and hasn't changed, update the previous rendering's device description
-                        if in_use and not change_in_between_used_versions:
-                            platform_name,prev_display_name = platform_version_dict[previous_rendering_in_survey]
-                            platform_version_dict[previous_rendering_in_survey] = (platform_name,'{0}, {1}'.format(prev_display_name,' '.join(version_display_name.split(' ')[1:])))
+                        # if it's in use and hasn't changed, update the previous version's device description to include the current version description
+                        # only if the current version description isn't already in the list
+                        if in_use and not change_in_between_used_versions and platform_version_id not in platform_version_dict:
+                            platform_name,prev_display_name = platform_version_dict[previous_rendering_version_in_survey]
+                            platform_version_dict[previous_rendering_version_in_survey] = (platform_name,'{0}, {1}'.format(prev_display_name,' '.join(version_display_name.split(' ')[1:])))
 
-                        # show versions that are in use and that have changed
-                        if in_use and change_in_between_used_versions:
+                        # show versions that are in use and that have changed, or that haven't changed but will be rendered due to another emoji
+                        if in_use and (change_in_between_used_versions or platform_version_id not in platform_version_dict):
                             emoji_platform_version_renderings[(platform_version_id,emoji_id)] = display_url
                             platform_version_dict[platform_version_id] = (platform_info['name'],version_display_name)
-                            previous_rendering_in_survey = platform_version_id
+                            previous_rendering_version_in_survey = platform_version_id
                             change_in_between_used_versions = is_changed
                             if platform_version_id not in platforms_versions_to_render:
                                 platforms_versions_to_render.append(platform_version_id)
@@ -651,7 +654,7 @@ class Queries:
 
         tweets = []
         unsupported_count = 0 # = showing_component_count + showing_unsupported_count + showing_component_unsupported_combo
-        showing_component_count = 0
+        showing_components_count = 0
         showing_unsupported_count = 0
         showing_component_unsupported_combo_count = 0
         for platform_id,platform_info in Survey.platforms_versions.items():
@@ -674,68 +677,81 @@ class Queries:
                             if display_url_result:
                                 display_url = display_url_result[0]
 
+                        if display_url:
+                            tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url)
+
                         # Handle if the platform (version) doesn't support the given emoji:
                         # Render the component codepoints, except for U+200D (the Zero Width Joiner character) and U+FE0F (Emoji Presentation Character)
                         # If the component codepoints aren't supported, render the unsupported character (empty vertical rectangle)
-                        if not display_url:
+                        else:
                             # TODO handle if platform doesn't support
                             print("{0} {1} doesn't support emoji {2}".format(platform_name,version_name,emoji_id))
                             unsupported_count += 1
-                            showing_component = False
+                            showing_components = False
                             showing_unsupported = False
                             skip_next = False
 
                             codepoint_string_result = conn.execute(Queries.codepoints_query,(emoji_id))
-                            codepoint_string = codepoint_string_result.fetchone()
-                            codepoints = codepoint_string[0].split('U+')
-                            for codepoint in codepoints[1:]:
-                                # Skip U+200D ZWJ, U+FE0F Emoji Presentation Character
-                                if codepoint=='200D' or codepoint=='FE0F' or skip_next:
-                                    skip_next = False
-                                    continue
-
-                                result = conn.execute(Queries.codepoint_rendering_img_query,('U+'+codepoint,platform_version_id))
+                            codepoint_string = codepoint_string_result.fetchone()[0].replace('U+FE0F','')
+                            sub_codepoint_strings = codepoint_string.split('U+200D')
+                            for sub_codepoint_string in sub_codepoint_strings:
+                                result = conn.execute(Queries.codepoint_rendering_img_query,(sub_codepoint_string,platform_version_id))
                                 display_url_result = result.fetchone()
+                                result.close()
                                 if display_url_result:
                                     tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url_result[0])
-                                    showing_component = True
+                                    showing_components = True
+                                else:
+                                    codepoints = sub_codepoint_string.split('U+')
+                                    for codepoint in codepoints[1:]:
+                                        if skip_next:
+                                            skip_next = False
+                                            continue
 
-                                if not display_url_result or codepoint=='1F3F4':
-                                    # if the codepoint is part of a "REGIONAL INDICATOR" pair (flag)
-                                    if codepoint.startswith('1F1E') or codepoint.startswith('1F1F'):
-                                        skip_next = True # handle for the pair, then skip the next codepoint
-                                        # Get the rendering for the base flag emoji (or unsupported) and the unsupported rendering
-                                        result = conn.execute(Queries.codepoint_rendering_img_query,('U+1F3F4',platform_version_id))
+                                        result = conn.execute(Queries.codepoint_rendering_img_query,('U+'+codepoint,platform_version_id))
                                         display_url_result = result.fetchone()
+                                        result.close()
                                         if display_url_result:
                                             tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url_result[0])
-                                            showing_component = True
-                                        else:
+                                            showing_components = True
+
+                                        if not display_url_result or codepoint=='1F3F4':
+                                            # if the codepoint is part of a "REGIONAL INDICATOR" pair (flag)
+                                            if codepoint.startswith('1F1E') or codepoint.startswith('1F1F'):
+                                                skip_next = True # handle for the pair, then skip the next codepoint
+                                                # Get the rendering for the base flag emoji (or unsupported) and the unsupported rendering
+                                                result = conn.execute(Queries.codepoint_rendering_img_query,('U+1F3F4',platform_version_id))
+                                                display_url_result = result.fetchone()
+                                                result.close()
+                                                if display_url_result:
+                                                    tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url_result[0])
+                                                    showing_components = True
+                                                else:
+                                                    tweet += "<img src=\"{0}\" />".format(url_for('static',filename='img/not_supported.png'))
+
                                             tweet += "<img src=\"{0}\" />".format(url_for('static',filename='img/not_supported.png'))
+                                            showing_unsupported = True
 
-                                    tweet += "<img src=\"{0}\" />".format(url_for('static',filename='img/not_supported.png'))
-                                    showing_unsupported = True
+                                            if codepoint=='1F3F4':
+                                                break
 
-                                    if codepoint=='1F3F4':
-                                        break
-
-                            if showing_component and showing_unsupported:
+                            if showing_components and showing_unsupported:
                                 showing_component_unsupported_combo_count += 1
                             else:
-                                if showing_component: showing_component_count+=1
+                                if showing_components: showing_components_count+=1
                                 if showing_unsupported: showing_unsupported_count+=1
-
-                        else:
-                            tweet += "<img src=\"{0}\" width=\"20px\" />".format(display_url)
 
                 # if only
                 version_name = 'Devices' if len(platforms_versions_to_render) == 1 and platform_name != "Twitter" else version_name
                 tweets.append((platform_name,version_name,tweet))
 
         num_tweet_versions = len(tweets)
-
-        # TODO store num tweet versions?
-        # TODO store num unsupported?
-        # TODO what want to store about what was shown?
+        conn.execute(Queries.tweet_analytics,(num_tweet_versions,
+                                              unsupported_count,
+                                              showing_components_count,
+                                              showing_unsupported_count,
+                                              showing_component_unsupported_combo_count,
+                                              tweet_id))
+        conn.close()
 
         return tweets

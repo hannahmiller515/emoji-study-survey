@@ -19,7 +19,7 @@ def create_app(config_name):
     Bootstrap(app)
 
     global engine
-    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'],pool_size=20)
     from app import models
 
     from .survey import survey as survey_blueprint

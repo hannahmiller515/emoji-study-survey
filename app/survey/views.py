@@ -24,9 +24,11 @@ def informed_consent(survey_id=None):
     if request.method == "POST" and form.validate_on_submit():
         if form.consent.data == "no":
             conn.execute(Queries.insert_consent_response, (False, session['survey_id']))
+            conn.close()
             return redirect(url_for('survey.consent_not_given'))
         elif form.consent.data == "yes":
             conn.execute(Queries.insert_consent_response, (True, session['survey_id']))
+            conn.close()
             return redirect(url_for('survey.page_one_age'))
 
     # GET
@@ -35,13 +37,13 @@ def informed_consent(survey_id=None):
         survey_id_int = int(survey_id)
         result = conn.execute(Queries.handle_query,(survey_id_int))
         survey_handle_result = result.fetchone()
-        result.close()
         if survey_handle_result:
             session['twitter_handle'] = survey_handle_result[0].lower()
         else:
             return redirect("http://z.umn.edu/emojistudy")
 
         conn.execute(Queries.survey_started,(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),survey_id_int))
+        conn.close()
         session['survey_id'] = survey_id_int
 
     else:
@@ -63,10 +65,12 @@ def page_one_age():
         survey_handle = session['twitter_handle']
         if survey_handle != handle and ('@' + survey_handle) != handle:
             conn.execute(Queries.insert_wrong_handle_response,(handle,session['survey_id']))
+            conn.close()
             return redirect(url_for("survey.wrong_handle"))
 
         age = int(form.age.data)
         conn.execute(Queries.insert_age_response, (age, session['survey_id']))
+        conn.close()
 
         if age == 0:
             return redirect(url_for("survey.under_18"))
@@ -128,6 +132,7 @@ def page_two_device():
                                                       device,
                                                       device_other,
                                                       session['survey_id']))
+        conn.close()
 
         return redirect(url_for('survey.page_three_appear'))
 
@@ -151,6 +156,7 @@ def page_three_appear():
 
         conn = engine.connect()
         conn.execute(Queries.insert_appearance_response, (appear, appear_explanation, session['survey_id']))
+        conn.close()
 
         return redirect(url_for('survey.page_four_emojirole'))
 
@@ -172,6 +178,7 @@ def page_four_emojirole():
 
         conn = engine.connect()
         conn.execute(Queries.insert_emoji_role_response, (needs_emoji, could_remove, could_substitute, session['survey_id']))
+        conn.close()
 
         return redirect(url_for('survey.page_five_expose'))
 
@@ -193,11 +200,13 @@ def page_five_expose():
         if form.aware.data == "no":
             aware = False
             conn.execute(Queries.insert_awareness_response, (aware, session['survey_id']))
+            conn.close()
             return redirect(url_for('survey.page_six_explain'))
 
         elif form.aware.data == "yes":
             aware = True
             conn.execute(Queries.insert_awareness_response, (aware, session['survey_id']))
+            conn.close()
             return redirect(url_for('survey.page_six_aware'))
 
     # GET
@@ -223,6 +232,7 @@ def page_six_explain():
 
         conn = engine.connect()
         conn.execute(Queries.insert_reaction_response, (reaction, describe_reaction, session['survey_id']))
+        conn.close()
 
         return redirect(url_for('survey.page_seven_eval'))
 
@@ -246,6 +256,7 @@ def page_six_aware():
 
         conn = engine.connect()
         conn.execute(Queries.insert_aware_response, (aware_path, aware_path_other, aware_explanation, session['survey_id']))
+        conn.close()
 
         if aware_path == 5:
             return redirect(url_for("survey.page_six_explain"))
@@ -290,6 +301,7 @@ def page_seven_eval():
                                                           same_interpretation, same_interpretation_explanation,
                                                           send_tweet, send_tweet_explanation,
                                                           edit_tweet, edit_tweet_other, session['survey_id']))
+        conn.close()
 
         return redirect(url_for('survey.page_eight_follow'))
 
@@ -365,6 +377,7 @@ def page_eight_follow():
                                                                   use_Slack,
                                                                   use_Whatsapp,
                                                                   session['survey_id']))
+        conn.close()
 
         return redirect(url_for('survey.page_nine_audience'))
 
@@ -492,7 +505,7 @@ def page_nine_audience():
                                                            use_on_Windows_Other, Windows_Other_desc,
                                                            use_on_Other, Other_desc,
                                                            session['survey_id']))
-
+        conn.close()
         return redirect(url_for('survey.page_ten_future'))
 
     #GET
@@ -511,6 +524,7 @@ def page_ten_future():
 
         conn = engine.connect()
         conn.execute(Queries.insert_future_contact_response, (contact_in_future, session['survey_id']))
+        conn.close()
 
         return redirect(url_for('survey.end_survey'))
 
@@ -520,9 +534,12 @@ def page_ten_future():
 def end_survey():
     conn = engine.connect()
     conn.execute(Queries.survey_completed,(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),session['survey_id']))
+    conn.close()
+
     session.pop('survey_id', None)
     session.pop('twitter_handle', None)
     session.pop('tweet_id',None)
     session.pop('tweet',None)
     session.pop('tweets',None)
+
     return render_template('survey/end.html', end_text=Survey.end_text)
