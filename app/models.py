@@ -216,7 +216,7 @@ class Survey:
     page_seven_eval["same_interpretation_options"] = [("yes","<b>Yes</b>, I think my followers will interpret my tweet the same way."),
                                                       ("some","I think <b>some</b> of my followers will interpret my tweet the same way, some will not."),
                                                       ("no","<b>No</b>, I think my followers will not interpret my tweet the same way.")]
-    page_seven_eval["send_tweet"] = """If you had you known that this is how your tweet would look to your
+    page_seven_eval["send_tweet"] = """If you had known that this is how your tweet would look to your
                                  audience, would you have sent it as is?"""
     page_seven_eval["edit_tweet"] = "How would you edit your tweet knowing this is how it looks to your audience?"
     page_seven_eval["edit_tweet_options"] = [("0","I would not edit my tweet."),
