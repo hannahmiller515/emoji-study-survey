@@ -106,23 +106,7 @@ def page_two_device():
 
         device = form.device.data
         device_other = None
-        if device == "iOS_Other":
-            device_other = form.iOS_Other.data
-        elif device == "Samsung_Other":
-            device_other = form.Samsung_Other.data
-        elif device == "Google_Other":
-            device_other = form.Google_Other.data
-        elif device == "LG_Other":
-            device_other = form.LG_Other.data
-        elif device == "Motorola_Other":
-            device_other = form.Motorola_Other.data
-        elif device == "HTC_Other":
-            device_other = form.HTC_Other.data
-        elif device == "Blackberry_Other":
-            device_other = form.Blackberry_Other.data
-        elif device == "Windows_Other":
-            device_other = form.Windows_Other.data
-        elif device == "Other":
+        if device == "Other":
             device_other = form.Other.data
 
         conn = engine.connect()
@@ -418,59 +402,36 @@ def page_nine_audience():
         use_on_MacBook = form.use_on_MacBook.data
         use_on_iMac = form.use_on_iMac.data
         use_on_iOS_Other = form.use_on_iOS_Other.data
-        iOS_Other_desc = None
-        if not form.iOS_Other_desc.data == '':
-            iOS_Other_desc = form.iOS_Other_desc.data
 
         use_on_Samsung_Phone = form.use_on_Samsung_Phone.data
         use_on_Samsung_Tablet = form.use_on_Samsung_Tablet.data
         use_on_Samsung_Other = form.use_on_Samsung_Other.data
-        Samsung_Other_desc = None
-        if not form.Samsung_Other_desc.data == '':
-            Samsung_Other_desc = form.Samsung_Other_desc.data
 
         use_on_Google_Phone = form.use_on_Google_Phone.data
         use_on_Google_Tablet = form.use_on_Google_Tablet.data
         use_on_Google_Other = form.use_on_Google_Other.data
-        Google_Other_desc = None
-        if not form.Google_Other_desc.data == '':
-            Google_Other_desc = form.Google_Other_desc.data
 
         use_on_LG_Phone = form.use_on_LG_Phone.data
         use_on_LG_Other = form.use_on_LG_Other.data
-        LG_Other_desc = None
-        if not form.LG_Other_desc.data == '':
-            LG_Other_desc = form.LG_Other_desc.data
 
         use_on_Motorola_Phone = form.use_on_Motorola_Phone.data
         use_on_Motorola_Other = form.use_on_Motorola_Other.data
-        Motorola_Other_desc = None
-        if not form.Motorola_Other_desc.data == '':
-            Motorola_Other_desc = form.Motorola_Other_desc.data
 
         use_on_HTC_Phone = form.use_on_HTC_Phone.data
         use_on_HTC_Other = form.use_on_HTC_Other.data
-        HTC_Other_desc = None
-        if not form.HTC_Other_desc.data == '':
-            HTC_Other_desc = form.HTC_Other_desc.data
 
         use_on_Amazon_Kindle = form.use_on_Amazon_Kindle.data
 
         use_on_Blackberry_Phone = form.use_on_Blackberry_Phone.data
         use_on_Blackberry_Tablet = form.use_on_Blackberry_Tablet.data
         use_on_Blackberry_Other = form.use_on_Blackberry_Other.data
-        Blackberry_Other_desc = None
-        if not form.Blackberry_Other_desc.data == '':
-            Blackberry_Other_desc = form.Blackberry_Other_desc.data
 
         use_on_Windows_Phone = form.use_on_Windows_Phone.data
         use_on_Windows_Tablet = form.use_on_Windows_Tablet.data
-        use_on_Windows_Laptop = form.use_on_Windows_Laptop.data
-        use_on_Windows_Desktop = form.use_on_Windows_Desktop.data
+        use_on_Windows_LapDesktop = form.use_on_Windows_LapDesktop.data
         use_on_Windows_Other = form.use_on_Windows_Other.data
-        Windows_Other_desc = None
-        if not form.Windows_Other_desc.data == '':
-            Windows_Other_desc = form.Windows_Other_desc.data
+
+        use_on_Linux_LapDesktop = form.use_on_Linux_LapDesktop.data
 
         use_on_Other = form.use_on_Other.data
         Other_desc = None
@@ -481,28 +442,28 @@ def page_nine_audience():
                                                            use_on_iPad,
                                                            use_on_MacBook,
                                                            use_on_iMac,
-                                                           use_on_iOS_Other, iOS_Other_desc,
+                                                           use_on_iOS_Other,
                                                            use_on_Samsung_Phone,
                                                            use_on_Samsung_Tablet,
-                                                           use_on_Samsung_Other, Samsung_Other_desc,
+                                                           use_on_Samsung_Other,
                                                            use_on_Google_Phone,
                                                            use_on_Google_Tablet,
-                                                           use_on_Google_Other, Google_Other_desc,
+                                                           use_on_Google_Other,
                                                            use_on_LG_Phone,
-                                                           use_on_LG_Other, LG_Other_desc,
+                                                           use_on_LG_Other,
                                                            use_on_Motorola_Phone,
-                                                           use_on_Motorola_Other, Motorola_Other_desc,
+                                                           use_on_Motorola_Other,
                                                            use_on_HTC_Phone,
-                                                           use_on_HTC_Other, HTC_Other_desc,
+                                                           use_on_HTC_Other,
                                                            use_on_Amazon_Kindle,
                                                            use_on_Blackberry_Phone,
                                                            use_on_Blackberry_Tablet,
-                                                           use_on_Blackberry_Other, Blackberry_Other_desc,
+                                                           use_on_Blackberry_Other,
                                                            use_on_Windows_Phone,
                                                            use_on_Windows_Tablet,
-                                                           use_on_Windows_Laptop,
-                                                           use_on_Windows_Desktop,
-                                                           use_on_Windows_Other, Windows_Other_desc,
+                                                           use_on_Windows_LapDesktop,
+                                                           use_on_Windows_Other,
+                                                           use_on_Linux_LapDesktop,
                                                            use_on_Other, Other_desc,
                                                            session['survey_id']))
         conn.close()
