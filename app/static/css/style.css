@@ -45,9 +45,9 @@ td {
     border-width: thin;
     padding: 15px;
     background-color: #ffffff;
-    #max-width: 400px;
+    min-width: 350px;
     width: auto;
-    max-width: 600px;
+    max-width: 550px;
 }
 
 .short-text-field {

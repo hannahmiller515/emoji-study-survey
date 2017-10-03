@@ -619,7 +619,7 @@ class Queries:
                             platform_version_dict[previous_rendering_version_in_survey] = (platform_name,'{0}, {1}'.format(prev_display_name,' '.join(version_display_name.split(' ')[1:])))
 
                         # show versions that are in use and that have changed, or that haven't changed but will be rendered due to another emoji
-                        if in_use and (change_in_between_used_versions or platform_version_id not in platform_version_dict):
+                        if in_use and (change_in_between_used_versions or platform_version_id in platform_version_dict):
                             emoji_platform_version_renderings[(platform_version_id,emoji_id)] = display_url
                             platform_version_dict[platform_version_id] = (platform_info['name'],version_display_name)
                             previous_rendering_version_in_survey = platform_version_id
