@@ -57,6 +57,7 @@ def consent_not_given():
 @survey.route('/survey/1', methods=['GET','POST'])
 def page_one_age():
     form = AgeForm()
+    handle_error = '';
 
     #POST
     if request.method == "POST" and form.validate_on_submit():
@@ -66,7 +67,8 @@ def page_one_age():
         if survey_handle != handle and ('@' + survey_handle) != handle:
             conn.execute(Queries.insert_wrong_handle_response,(handle,session['survey_id']))
             conn.close()
-            return redirect(url_for("survey.wrong_handle"))
+            handle_error = Survey.page_one_age["wrong_handle_error"]
+            return render_template('survey/page1-age.html', form=form, form_text=Survey.page_one_age, handle_error=handle_error)
 
         age = int(form.age.data)
         conn.execute(Queries.insert_age_response, (age, session['survey_id']))
@@ -78,7 +80,7 @@ def page_one_age():
         return redirect(url_for('survey.page_two_device'))
 
     #GET
-    return render_template('survey/page1-age.html', form=form, form_text=Survey.page_one_age)
+    return render_template('survey/page1-age.html', form=form, form_text=Survey.page_one_age, handle_error=handle_error)
 
 @survey.route('/survey/handle_error')
 def wrong_handle():

@@ -72,6 +72,9 @@ class Survey:
     page_one_age = {}
     page_one_age["handle"] = """This survey is tailored specifically to you and your twitter activity.
                                 Please enter your Twitter handle to help us confirm that we have the correct data:"""
+    page_one_age["wrong_handle_error"] = """That doesn't match our records, please try again.
+                                            (Hint: make sure you are using your Twitter handle,
+                                            which begins with "@", e.g., @UMNEmojiStudy)"""
     page_one_age["wrong_handle"] = """We're sorry, but we do not have the correct data for the Twitter handle you
                                       entered. Thank you for your time!"""
     page_one_age["age"] = "Please select your age:"

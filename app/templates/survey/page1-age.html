@@ -7,7 +7,7 @@
     <div class="container">
         {{ form.hidden_tag() }}
 
-        <div class="form-group {% if form.handle.errors %}has-danger{% endif %}">
+        <div class="form-group {% if form.handle.errors or handle_error != '' %}has-danger{% endif %}">
             <p>{{ form_text.handle }}</p>
             <div class="container">
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
@@ -17,6 +17,7 @@
                 {% if form.handle.errors %}
                     <div class="form-control-feedback">{% for error in form.handle.errors %}* {{ error }}{% endfor %}</div>
                 {% endif %}
+                <div class="form-control-feedback">{{ handle_error }}</div>
             </div>
         </div>
 
