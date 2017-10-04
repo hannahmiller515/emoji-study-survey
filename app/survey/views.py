@@ -401,35 +401,27 @@ def page_nine_audience():
         use_on_iPad = form.use_on_iPad.data
         use_on_MacBook = form.use_on_MacBook.data
         use_on_iMac = form.use_on_iMac.data
-        use_on_iOS_Other = form.use_on_iOS_Other.data
 
         use_on_Samsung_Phone = form.use_on_Samsung_Phone.data
         use_on_Samsung_Tablet = form.use_on_Samsung_Tablet.data
-        use_on_Samsung_Other = form.use_on_Samsung_Other.data
 
         use_on_Google_Phone = form.use_on_Google_Phone.data
         use_on_Google_Tablet = form.use_on_Google_Tablet.data
-        use_on_Google_Other = form.use_on_Google_Other.data
 
         use_on_LG_Phone = form.use_on_LG_Phone.data
-        use_on_LG_Other = form.use_on_LG_Other.data
 
         use_on_Motorola_Phone = form.use_on_Motorola_Phone.data
-        use_on_Motorola_Other = form.use_on_Motorola_Other.data
 
         use_on_HTC_Phone = form.use_on_HTC_Phone.data
-        use_on_HTC_Other = form.use_on_HTC_Other.data
 
         use_on_Amazon_Kindle = form.use_on_Amazon_Kindle.data
 
         use_on_Blackberry_Phone = form.use_on_Blackberry_Phone.data
         use_on_Blackberry_Tablet = form.use_on_Blackberry_Tablet.data
-        use_on_Blackberry_Other = form.use_on_Blackberry_Other.data
 
         use_on_Windows_Phone = form.use_on_Windows_Phone.data
         use_on_Windows_Tablet = form.use_on_Windows_Tablet.data
         use_on_Windows_LapDesktop = form.use_on_Windows_LapDesktop.data
-        use_on_Windows_Other = form.use_on_Windows_Other.data
 
         use_on_Linux_LapDesktop = form.use_on_Linux_LapDesktop.data
 
@@ -442,27 +434,19 @@ def page_nine_audience():
                                                            use_on_iPad,
                                                            use_on_MacBook,
                                                            use_on_iMac,
-                                                           use_on_iOS_Other,
                                                            use_on_Samsung_Phone,
                                                            use_on_Samsung_Tablet,
-                                                           use_on_Samsung_Other,
                                                            use_on_Google_Phone,
                                                            use_on_Google_Tablet,
-                                                           use_on_Google_Other,
                                                            use_on_LG_Phone,
-                                                           use_on_LG_Other,
                                                            use_on_Motorola_Phone,
-                                                           use_on_Motorola_Other,
                                                            use_on_HTC_Phone,
-                                                           use_on_HTC_Other,
                                                            use_on_Amazon_Kindle,
                                                            use_on_Blackberry_Phone,
                                                            use_on_Blackberry_Tablet,
-                                                           use_on_Blackberry_Other,
                                                            use_on_Windows_Phone,
                                                            use_on_Windows_Tablet,
                                                            use_on_Windows_LapDesktop,
-                                                           use_on_Windows_Other,
                                                            use_on_Linux_LapDesktop,
                                                            use_on_Other, Other_desc,
                                                            session['survey_id']))

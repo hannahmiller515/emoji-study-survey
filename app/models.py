@@ -97,7 +97,7 @@ class Survey:
             skip = False
             continue
 
-        img_str = "<img src=\"{0}\" width=\"30px\" />".format(display_url)
+        img_str = "<img src=\"{0}\" width=\"20px\" />".format(display_url)
         page_two_device["emoji_options"].append((str(platform_version_id),img_str))
 
         if not post_version_id and not is_changed:
@@ -111,27 +111,19 @@ class Survey:
                                          ("iPad","iPad"),
                                          ("MacBook","MacBook"),
                                          ("iMac","iMac"),
-                                         ("iOS_Other","iOS Other"),
                                          ("Samsung_Phone","Samsung Phone"),
                                          ("Samsung_Tablet","Samsung Tablet"),
-                                         ("Samsung_Other","Samsung Other"),
-                                         ("Google_Phone","Google Phone"),
-                                         ("Google_Tablet","Google Tablet"),
-                                         ("Google_Other","Google Other"),
+                                         ("Google_Phone","Google Phone (e.g., Nexus, Pixel)"),
+                                         ("Google_Tablet","Google Tablet (e.g., Nexus, Pixel)"),
                                          ("LG_Phone","LG Phone"),
-                                         ("LG_Other","LG Other"),
                                          ("Motorola_Phone","Motorola Phone"),
-                                         ("Motorola_Other","Motorola Other"),
                                          ("HTC_Phone","HTC Phone"),
-                                         ("HTC_Other","HTC Other"),
-                                         ("Amazon_Kindle","Amazon Kindle"),
+                                         ("Amazon_Kindle","Amazon Kindle Fire"),
                                          ("Blackberry_Phone","Blackberry Phone"),
                                          ("Blackberry_Tablet","Blackberry Tablet"),
-                                         ("Blackberry_Other","Blackberry Other"),
                                          ("Windows_Phone","Windows Phone"),
                                          ("Windows/Microsoft_Tablet","Windows/Microsoft Tablet"),
                                          ("Windows_LapDesktop","Windows Lap/Desktop"),
-                                         ("Windows_Other","Windows Other"),
                                          ("Linux_LapDesktop","Linux Lap/Desktop"),
                                          ("Other","Other:")]
     page_two_device["device_options_other"] = ["Other"]
@@ -399,33 +391,25 @@ class Queries:
                                             use_on_iPad,
                                             use_on_MacBook,
                                             use_on_iMac,
-                                            use_on_iOS_Other,
                                             use_on_Samsung_Phone,
                                             use_on_Samsung_Tablet,
-                                            use_on_Samsung_Other,
                                             use_on_Google_Phone,
                                             use_on_Google_Tablet,
-                                            use_on_Google_Other,
                                             use_on_LG_Phone,
-                                            use_on_LG_Other,
                                             use_on_Motorola_Phone,
-                                            use_on_Motorola_Other,
                                             use_on_HTC_Phone,
-                                            use_on_HTC_Other,
                                             use_on_Amazon_Kindle,
                                             use_on_Blackberry_Phone,
                                             use_on_Blackberry_Tablet,
-                                            use_on_Blackberry_Other,
                                             use_on_Windows_Phone,
                                             use_on_Windows_Tablet,
                                             use_on_Windows_LapDesktop,
-                                            use_on_Windows_Other,
                                             use_on_Linux_LapDesktop,
                                             use_on_Other,
                                             Other_desc,
                                             survey_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                                                               %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-                                                              %s,%s,%s,%s,%s,%s,%s,%s,%s);'''
+                                                              %s);'''
 
     insert_future_contact_response = '''REPLACE INTO future_contact_responses(
                                                 future_contact,
