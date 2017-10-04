@@ -215,7 +215,7 @@ def page_six_explain():
             describe_reaction = form.describe_reaction.data
 
         conn = engine.connect()
-        conn.execute(Queries.insert_reaction_response, (reaction, describe_reaction, session['survey_id']))
+        conn.execute(Queries.insert_reaction_response, (describe_reaction, reaction, session['survey_id']))
         conn.close()
 
         return redirect(url_for('survey.page_seven_eval'))
