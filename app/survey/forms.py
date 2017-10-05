@@ -142,4 +142,5 @@ class AudienceForm(FlaskForm):
 class FutureForm(FlaskForm):
     contact_in_future = RadioField(choices=Survey.page_ten_future["future_options"],
                                    validators=[InputRequired("Required")])
+    feedback = TextAreaField(Survey.page_ten_future["feedback"])
     submit = SubmitField('>>')

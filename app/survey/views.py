@@ -471,6 +471,12 @@ def page_ten_future():
 
         conn = engine.connect()
         conn.execute(Queries.insert_future_contact_response, (contact_in_future, session['survey_id']))
+
+        feedback = None
+        if not form.feedback.data == '':
+            feedback = form.feedback.data
+
+        conn.execute(Queries.insert_feedback_response,(feedback, session['survey_id']))
         conn.close()
 
         return redirect(url_for('survey.end_survey'))

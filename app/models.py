@@ -257,6 +257,8 @@ class Survey:
                                    us contacting you again for future participation?"""
     page_ten_future["future_options"] = [("yes","Yes, you may contact me again in the future."),
                                          ("no","No, please do not contact me again.")]
+    page_ten_future["feedback"] = """Is there anything you'd like to share with us before submitting your survey?
+                                     Any comments, feedback, suggestions? (optional)"""
 
     end_text = "Your survey has been submitted. Thank you so much for your time and participation. Happy tweeting!"
 
@@ -417,6 +419,10 @@ class Queries:
     insert_future_contact_response = '''REPLACE INTO future_contact_responses(
                                                 future_contact,
                                                 survey_id) VALUES(%s,%s);'''
+
+    insert_feedback_response = '''REPLACE INTO feedback_responses(
+                                      feedback,
+                                      survey_id) VALUES (%s,%s);'''
 
     survey_started = '''UPDATE surveys
                         SET started=%s
